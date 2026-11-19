@@ -1,4 +1,4 @@
-# OC4211 Test 2 — Lecture Slide Method (v8 — annotated algebra)
+# OC4211 Test 2 — Lecture Slide Method (v10 — line-by-line algebra)
 
 A single-file mobile study workbook for eight OC4211 sample problems and the announced Poincaré derivation. The solution order follows the corresponding **lecture slides** (especially Lecture 15 slides 3–7 and Lecture 16 slides 3–6). No arbitrary step counts or complex-amplitude shortcuts.
 
@@ -34,6 +34,21 @@ Open your existing GitHub repository → **Add file → Upload files**. Extract 
 
 Lecture 15 distinguishes the wavevector angle φ, where ω=N cosφ, from the energy/group-velocity angle θ, where ω=N sinθ. The original worked lesson interprets its 30° as φ. The alternative is labeled in the study solution rather than silently conflated.
 
+
+### Version 10 · Every mathematical action shown
+
+Each step now has these extra pieces:
+
+- **Line by line** — the intermediate algebra that used to be skipped, one move per line, each with a short note (e.g. "divide both sides by 2ω", "cancel one ω: ω²/ω = ω", "two negatives make a positive").
+- **Rule used** — the calculus or algebra rule behind the move (power, product, chain, quotient rule, sinusoid derivatives, mixed partials, sinh(2x) identity, dividing by a fraction).
+- **Move-type tags** — Differentiate / Multiply / Add rows / Substitute / Cancel / Neglect / Rearrange / Trial wave / Numbers / Check. They stay visible on locked steps in Recall mode as a hint.
+- **Unknown fields left** — in the derivations (P3, P4, P7, Q5), chips show which fields remain and when you reach one equation in one unknown.
+
+Biggest gaps filled: P1 c<sub>m</sub> = (4gγ/ρ)^¼ simplification; P2 group-velocity simplification and the sech²/tanh identity; P3 hydrostatic cancellation, the N² substitution, and the ∂²/∂t²∂²w/∂x² sign; P4 and Q5 chain-rule derivatives of cos(kx−ωt), the Û and V̂ amplitude algebra, and the x-momentum check; P5 second quotient rule and why maximising in q = k² is allowed; P6 the f²R<sub>d</sub>² = gh cancellation; P7 standing wave vs travelling wave and the 2-D mode comparison; P8 reciprocal-of-a-fraction steps and month conversion. The P3 wavevector sketch is back in the angle step. The memory sheet has a new "Algebra & calculus moves" toolkit.
+
+Fix: earlier versions of `index.html` never linked `manifest.webmanifest` or `apple-touch-icon.png`, and never registered `sw.js`, so Home Screen installs had no app icon and offline mode never started. All three are now wired up. The service worker is network-first, so updates still arrive whenever you're online.
+
+Changed files: `index.html`, `sw.js` (cache name bumped so phones fetch the update), `README.md`. Icons, manifest and `.nojekyll` are unchanged. Saved progress carries over. If your Home Screen icon still shows the old picture, delete it and re-add it from Safari once.
 
 ### Version 9 · Problem 4 correction
 

@@ -7,6 +7,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="OC4211 Drill">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <title>OC4211 Test 2 — Lecture Method + Marked Algebra · Nine Problems</title>
 <style>
 :root{--bg:#edf2f5;--paper:#fff;--navy:#12293a;--ink:#1e2c37;--muted:#607280;--line:#d5e0e6;--blue:#1e659b;--blue-light:#e8f3fb;--green:#22734d;--green-soft:#e7f5ed;--amber:#995718;--amber-soft:#fff4e4;--shadow:0 3px 22px rgba(20,44,61,.045)}
@@ -188,15 +191,57 @@ main{min-width:0}.study-intro{border:1px solid #c6dce8;background:#f7fbfd;border
 @media(max-width:355px){.move-source-line{font-size:13px}.move-action{font-size:11.8px}}
 </style>
 <style> .quick-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,265px),1fr));gap:9px}.quick-card{border:1px solid #d9e4ea;border-radius:8px;padding:12px;background:#f9fcfd}.quick-card h4{font-size:14px;margin:0 0 8px;color:#235777}.quick-card p{font-size:12.5px;margin:5px 0;color:#344f5f;overflow-wrap:anywhere}.quick-card b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:#577485}@media(max-width:640px){.quick-grid{grid-template-columns:1fr}}</style>
+<style>
+/* Version 10: every hidden algebra move written out, move-type tags, rule cards, unknowns tracker. */
+.op-tags{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 8px}
+.op-tag{display:inline-flex;align-items:center;gap:5px;font:750 10.5px/1 system-ui,-apple-system,sans-serif;letter-spacing:.035em;text-transform:uppercase;padding:4px 8px 4px 4px;border-radius:999px;border:1px solid #cfdde7;background:#f3f8fb;color:#33556b;white-space:nowrap}
+.op-tag i{font-style:normal;display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;background:#dbe8f1;color:#1f5577;font-size:11px;font-weight:800;letter-spacing:0;text-transform:none}
+.op-diff{background:#eef5fd;border-color:#bfd6ee;color:#1d5689}.op-diff i{background:#1e659b;color:#fff}
+.op-mult,.op-add,.op-subtract{background:#f4f1fd;border-color:#d6cdf1;color:#4f3b8f}.op-mult i,.op-add i,.op-subtract i{background:#6a4fc0;color:#fff}
+.op-subst{background:#eaf7ef;border-color:#b7dfc5;color:#1d6a41}.op-subst i{background:#2b8a57;color:#fff}
+.op-cancel{background:#fdf0ef;border-color:#f0c3c0;color:#9c2b26}.op-cancel i{background:#d4423b;color:#fff}
+.op-neglect{background:#fff6e8;border-color:#efd3a6;color:#8a5212}.op-neglect i{background:#c47b1c;color:#fff}
+.op-solve{background:#eef1fa;border-color:#cbd3ec;color:#33437d}.op-solve i{background:#4a5ba6;color:#fff}
+.op-wave{background:#e9f7f7;border-color:#b5dfdf;color:#18676a}.op-wave i{background:#21898c;color:#fff}
+.op-num{background:#f2f4f5;border-color:#d4dadd;color:#46565f}.op-num i{background:#66767f;color:#fff}
+.op-check{background:#ecf8f1;border-color:#b9e0c9;color:#1f6a45}.op-check i{background:#1f6a45;color:#fff}
+.op-setup{background:#f1f5f8;border-color:#d2dde5;color:#405969}.op-setup i{background:#5b7587;color:#fff}
+.rule-card{display:grid;gap:3px;border:1px dashed #b9a9e6;background:#f8f6fe;border-radius:8px;padding:8px 10px}
+.rule-name{font:800 10px/1.3 system-ui,-apple-system,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#5a43a6}
+.rule-formula{font-size:14px;line-height:1.6;color:#2f2463;font-weight:560;overflow-wrap:anywhere}
+.derive{list-style:none;counter-reset:dv;margin:0;padding:0;display:grid;gap:0;background:white;border:1px solid #dbe7ee;border-radius:8px;overflow:hidden}
+.derive li{counter-increment:dv;display:grid;grid-template-columns:24px minmax(0,1fr);column-gap:8px;padding:8px 10px 8px 8px;border-top:1px solid #edf2f5}
+.derive li:first-child{border-top:none}
+.derive li::before{content:counter(dv,lower-alpha);grid-row:1 / span 2;align-self:start;margin-top:3px;width:20px;height:20px;border-radius:5px;display:grid;place-items:center;background:#eef3f6;color:#5d7686;font:800 11px/1 system-ui,sans-serif}
+.derive-eq{font-size:15.5px;line-height:1.75;font-weight:560;color:#1b3a4f;overflow-wrap:anywhere;min-width:0}
+.derive-note{font-size:12.5px;line-height:1.45;color:#56717f;margin-top:1px;min-width:0}
+.derive-note::before{content:"↳ ";color:#9ab1be}
+.move-figure{background:white;border:1px solid #dbe7ee;border-radius:8px;padding:6px}
+.angle-figure{display:block;width:100%;max-width:360px;height:auto;margin:0 auto}
+.assumption-note{display:block;margin-top:9px;font-size:13px;line-height:1.45;color:#87551f;background:var(--amber-soft);border:1px solid #efd6b1;border-radius:7px;padding:7px 10px}
+.unknowns{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:-2px 0 9px}
+.uk-label{font:800 10px/1.2 system-ui,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:#5e7888;margin-right:3px}
+.uk{display:inline-block;min-width:28px;text-align:center;font-weight:750;font-size:14px;padding:2px 8px;border-radius:6px;border:1px solid #c9d8e2;background:white;color:#244a62}
+.uk.keep{background:#1e659b;border-color:#1e659b;color:white}
+.uk.gone{position:relative;color:#b04a44;background:#fdf1f0;border-color:#f0cbc8;opacity:.9}
+.uk.gone::after{content:"";position:absolute;left:4px;right:4px;top:50%;border-top:2.4px solid #e03535;transform:rotate(-24deg);pointer-events:none}
+.uk-done{font:800 10.5px/1 system-ui,sans-serif;letter-spacing:.04em;text-transform:uppercase;color:#1f6a45;background:#e6f5ec;border:1px solid #b2dcc2;border-radius:999px;padding:5px 9px;margin-left:2px}
+.step.locked .op-tags{opacity:.75}
+.toolkit .quick-card{background:#fbfaff;border-color:#e0d9f5}.toolkit .quick-card h4{color:#4f3b8f}
+@media(min-width:900px){.derive li{grid-template-columns:24px minmax(0,1.25fr) minmax(0,1fr);column-gap:14px}.derive li::before{grid-row:1}.derive-note{margin-top:4px}}
+@media(max-width:640px){.derive-eq{font-size:14.5px;line-height:1.7}.derive-note{font-size:12px}.derive li{grid-template-columns:22px minmax(0,1fr);column-gap:6px;padding:7px 8px 7px 6px}.rule-formula{font-size:13.5px}.op-tag{font-size:10px}.uk{font-size:13px}}
+@media(max-width:355px){.derive-eq{font-size:13.5px}}
+@media print{.op-tags,.unknowns{display:none}}
+</style>
 </head>
 <body>
 <header class="top"><div class="top-inner"><div class="brand"><div class="brand-mark">OC4211</div><div><h1>Test 2 · Equation-to-Answer</h1><span>Choose equations · Eliminate unknowns · Solve</span></div></div><div class="days" role="group" aria-label="Practice day"><span>THREE-DAY PLAN</span><button class="day active" data-day="0">Day 1 · Learn</button><button class="day" data-day="1">Day 2 · Recall</button><button class="day" data-day="2">Day 3 · Exam</button></div></div></header>
 <div class="layout"><aside class="side"><p class="side-title">8 sample problems + known Q5</p><nav class="problem-nav" id="problem-nav" aria-label="Select problem"></nav><div class="side-progress"><div><h3 id="progress-label">Day 1 progress</h3><div class="count" id="progress-count">0 / 9</div></div><div class="progress-bg"><div class="progress-bar" id="progress-bar"></div></div><div class="mini muted">Mark a problem solved when you can reproduce its method.</div></div><div class="side-tips"><b>Practice rule:</b> Write each numbered move on paper before revealing it. Your aim is a repeatable route, not a memorized numerical answer.</div></aside>
 <main id="content">
 <section class="study-intro"><div><strong id="day-heading">Day 1 — Learn the sequence.</strong><p id="day-desc">Start with the governing equations, identify unknowns, remove the ones you do not want, and only then insert numbers. The number of steps depends on the problem.</p></div><button class="outline" id="sheet-toggle" aria-expanded="false">9-route memory sheet</button></section>
-<section class="cheat panel" id="sheet"><div class="panel-body"><p class="section-caption">Exam recognition — cover the second line and recall it before opening a problem.</p><div class="quick-grid"><div class="quick-card"><h4>1 · Capillary minimum</h4><p><b>Start</b> ω²=gk+(γ/ρ)k³; c=ω/k</p><p><b>Unknowns → final</b> One free k. Derive c²(k), set its derivative to zero, obtain kₘ, cₘ, Lₘ.</p></div><div class="quick-card"><h4>2 · Gravity swell</h4><p><b>Start</b> ω²=gk tanh(kh); c=ω/k; cᵍ=dω/dk</p><p><b>Unknowns → final</b> k from L. Evaluate phase speed, then differentiate ω for group speed.</p></div><div class="quick-card"><h4>3 · Internal wave</h4><p><b>Start</b> Linear Boussinesq: ∂u/∂t=−(1/ρ₀)(∂p′/∂x); ∂w/∂t=−(1/ρ₀)(∂p′/∂z)+b; ∂b/∂t=−N²w; ∂u/∂x+∂w/∂z=0</p><p><b>Unknowns → final</b> Four fields u,w,p′,b. Eliminate U,P,B to get ω²=N²k²/(k²+m²), use angle, then T.</p></div><div class="quick-card"><h4>4 · Poincaré currents</h4><p><b>Start</b> ∂u/∂t−fv=−g ∂η/∂x; ∂v/∂t+fu=0; ∂η/∂t+h ∂u/∂x=0</p><p><b>Unknowns → final</b> Three fields (u,v,η). Apply ∂/∂t to (1), add f×(2) to cancel v; use −g∂/∂x of (3) to replace η. One PDE in u gives ω²=f²+ghk². THEN calculate Û and V̂.</p></div><div class="quick-card"><h4>5 · Rossby eastward group</h4><p><b>Start</b> ω=−βk/(k²+Rᵈ⁻²); cᵍ=dω/dk</p><p><b>Unknowns → final</b> One k. Differentiate twice, optimize positive group speed, cᵍ,max=βRᵈ²/8.</p></div><div class="quick-card"><h4>6 · Kelvin energy</h4><p><b>Start</b> u=0; ∂u/∂t−fv=−g ∂η/∂x; K=½ρhv²; P=½ρgη²</p><p><b>Unknowns → final</b> Eliminate v through geostrophy and Rᵈ; K/P=1.</p></div><div class="quick-card"><h4>7 · Lake seiche</h4><p><b>Start</b> ω²=gh(kₓ²+kᵧ²); kₓ=nπ/Lₓ; kᵧ=mπ/Lᵧ</p><p><b>Unknowns → final</b> Pick lowest nonzero mode; longest basin dimension; obtain ν=ω/2π.</p></div><div class="quick-card"><h4>8 · Equatorial Rossby</h4><p><b>Start</b> ω≈−βk/[k²+(2n+1)Rₑq⁻²]</p><p><b>Unknowns → final</b> Long limit drops k²; speed −c/(2n+1); then t=D/|speed| for n=1,2,3.</p></div><div class="quick-card"><h4>Known Q5 · Derivation</h4><p><b>Start</b> Three rotating shallow-water equations, initially nonlinear</p><p><b>Unknowns → final</b> Linearize; eliminate ∂v/∂t and ∂²η/(∂x ∂t); get PDE in u; insert sinusoid; ω²=f²+gh₀k².</p></div></div></div></section>
+<section class="cheat panel" id="sheet"><div class="panel-body"><p class="section-caption">Exam recognition — cover the second line and recall it before opening a problem.</p><div class="quick-grid"><div class="quick-card"><h4>1 · Capillary minimum</h4><p><b>Start</b> ω²=gk+(γ/ρ)k³; c=ω/k</p><p><b>Unknowns → final</b> One free k. Derive c²(k), set its derivative to zero, obtain kₘ, cₘ, Lₘ.</p></div><div class="quick-card"><h4>2 · Gravity swell</h4><p><b>Start</b> ω²=gk tanh(kh); c=ω/k; cᵍ=dω/dk</p><p><b>Unknowns → final</b> k from L. Evaluate phase speed, then differentiate ω for group speed.</p></div><div class="quick-card"><h4>3 · Internal wave</h4><p><b>Start</b> Linear Boussinesq: ∂u/∂t=−(1/ρ₀)(∂p′/∂x); ∂w/∂t=−(1/ρ₀)(∂p′/∂z)+b; ∂b/∂t=−N²w; ∂u/∂x+∂w/∂z=0</p><p><b>Unknowns → final</b> Four fields u,w,p′,b. Eliminate U,P,B to get ω²=N²k²/(k²+m²), use angle, then T.</p></div><div class="quick-card"><h4>4 · Poincaré currents</h4><p><b>Start</b> ∂u/∂t−fv=−g ∂η/∂x; ∂v/∂t+fu=0; ∂η/∂t+h ∂u/∂x=0</p><p><b>Unknowns → final</b> Three fields (u,v,η). Apply ∂/∂t to (1), add f×(2) to cancel v; use −g∂/∂x of (3) to replace η. One PDE in u gives ω²=f²+ghk². THEN calculate Û and V̂.</p></div><div class="quick-card"><h4>5 · Rossby eastward group</h4><p><b>Start</b> ω=−βk/(k²+Rᵈ⁻²); cᵍ=dω/dk</p><p><b>Unknowns → final</b> One k. Differentiate twice, optimize positive group speed, cᵍ,max=βRᵈ²/8.</p></div><div class="quick-card"><h4>6 · Kelvin energy</h4><p><b>Start</b> u=0; ∂u/∂t−fv=−g ∂η/∂x; K=½ρhv²; P=½ρgη²</p><p><b>Unknowns → final</b> Eliminate v through geostrophy and Rᵈ; K/P=1.</p></div><div class="quick-card"><h4>7 · Lake seiche</h4><p><b>Start</b> ω²=gh(kₓ²+kᵧ²); kₓ=nπ/Lₓ; kᵧ=mπ/Lᵧ</p><p><b>Unknowns → final</b> Pick lowest nonzero mode; longest basin dimension; obtain ν=ω/2π.</p></div><div class="quick-card"><h4>8 · Equatorial Rossby</h4><p><b>Start</b> ω≈−βk/[k²+(2n+1)Rₑq⁻²]</p><p><b>Unknowns → final</b> Long limit drops k²; speed −c/(2n+1); then t=D/|speed| for n=1,2,3.</p></div><div class="quick-card"><h4>Known Q5 · Derivation</h4><p><b>Start</b> Three rotating shallow-water equations, initially nonlinear</p><p><b>Unknowns → final</b> Linearize; eliminate ∂v/∂t and ∂²η/(∂x ∂t); get PDE in u; insert sinusoid; ω²=f²+gh₀k².</p></div></div><p class="section-caption" style="margin-top:18px">Algebra &amp; calculus moves you will need — each one is written out line by line inside the steps</p><div class="quick-grid toolkit"><div class="quick-card"><h4>Power rule · P1</h4><p>d(kⁿ)/dk = n·kⁿ⁻¹</p><p>g/k = g·k⁻¹ ⇒ d/dk = −g/k²</p></div><div class="quick-card"><h4>Product + chain rule · P2</h4><p>(FG)′ = F′G + FG′</p><p>d tanh(kh)/dk = h·sech²(kh)</p></div><div class="quick-card"><h4>Quotient rule · P5</h4><p>d(N/D)/dk = (N′D − ND′)/D²</p><p>d[k/(k²+a)]/dk = (a−k²)/(k²+a)²</p></div><div class="quick-card"><h4>Sinusoid derivatives · P3 P4 P7 Q5</h4><p>Φ = kx − ωt: ∂Φ/∂x = k, ∂Φ/∂t = −ω</p><p>∂²/∂x² → −k²; &nbsp; ∂²/∂t² → −ω²</p></div><div class="quick-card"><h4>Mixed partials · P3 P4 P7 Q5</h4><p>∂²F/(∂x∂t) = ∂²F/(∂t∂x)</p><p>Lets the η terms (or p′ terms) match and cancel.</p></div><div class="quick-card"><h4>Exponential chain rule · P6</h4><p>d(e<sup>−x/R</sup>)/dx = −(1/R)e<sup>−x/R</sup></p><p>⇒ ∂η/∂x = −η/R<sub>d</sub></p></div><div class="quick-card"><h4>Hyperbolic identity · P2</h4><p>sinh(2x) = 2 sinh x cosh x</p><p>⇒ sech²x / tanh x = 2/sinh(2x)</p></div><div class="quick-card"><h4>Dividing by a fraction · P8</h4><p>A ÷ (B/C) = A·C/B</p><p>−βk ÷ [(2n+1)/R²] = −βkR²/(2n+1)</p></div></div></div></section>
 <div id="problem-page" class="problem-page"></div>
-<p class="foot">Follows the OC4211 lecture elimination method. Red diagonal lines mark cancelled/neglected terms; green highlights substitutions. Each move repeats its required equation(s). Problems 8 and known Q5 follow the assigned L21 and L16 equations. Typical scales in Problem 8 are explicitly assumed, not supplied in the question. Progress is saved separately in each browser. No external dependencies.</p>
+<p class="foot">Version 10 · Follows the OC4211 lecture elimination method. Red diagonal lines mark cancelled/neglected terms; green highlights substitutions. Each move repeats its required equation(s), names the calculus rule it uses, and writes every intermediate line under “Line by line”. Problems 8 and known Q5 follow the assigned L21 and L16 equations. Typical scales in Problem 8 are explicitly assumed, not supplied in the question. Progress is saved separately in each browser. No external dependencies.</p>
 </main></div>
 <nav class="phone-dock" aria-label="Practice controls">
  <div class="dock-info"><span id="dock-problem">PROBLEM 1 / 9</span><strong id="dock-progress">0 / 9 COMPLETE</strong></div>
@@ -700,6 +745,7 @@ function attachVisualMoves(p,id,v){
     ST(p,0,[`ρ = ρ̄(z) + ρ′`,`p = p̄(z) + p′`,`ū = w̄ = 0`],`Define a motionless, hydrostatic basic state before dropping products of small perturbations.`);
     ST(p,1,[`${LE('(H)')} ∂u/∂t + ${x('u(∂u/∂x)')} + ${x('w(∂u/∂z)')} = −(1/ρ₀)(∂p′/∂x)`,`${LE('(V)')} ∂w/∂t + ${x('u(∂w/∂x)')} + ${x('w(∂w/∂z)')} = −(1/ρ₀)(∂p′/∂z) − gρ′/ρ₀`],`<b>Linearize:</b> drop ${x('quadratic perturbation terms')} because they multiply two small quantities. Keep first-order acceleration, pressure and buoyancy.`);
     ST(p,2,[`${LE('(D)')} ∂ρ′/∂t + ${x('u(∂ρ′/∂x)')} + w(dρ̄/dz) + ${x('w(∂ρ′/∂z)')} = 0`,`${LE('(C)')} ∂u/∂x + ∂w/∂z = 0`],`Drop products of perturbations in density conservation; incompressibility is already linear.`);
+    ST(p,3,[`${LE('(1)')} ∂u/∂t = −(1/ρ₀)(∂p′/∂x)`,`${LE('(2)')} ∂w/∂t = −(1/ρ₀)(∂p′/∂z) − gρ′/ρ₀`,`${LE('(3)')} ∂ρ′/∂t + w(dρ̄/dz) = 0`,`${LE('(4)')} ∂u/∂x + ∂w/∂z = 0`],`<b>Bookkeeping — no algebra yet.</b> Four equations, four unknown fields. Keep ${g('w')}; plan to remove p′ first, then ρ′, then u.`);
     ST(p,4,`${LE('(1)')} ∂u/∂t = −(1/ρ₀)(∂p′/∂x)`,`Apply ${g('∂/∂z')} to both sides so the pressure term becomes a mixed x–z derivative.`);
     ST(p,5,`${LE('(2)')} ∂w/∂t = −(1/ρ₀)(∂p′/∂z) − gρ′/ρ₀`,`Apply ${g('∂/∂x')} to both sides. Compare the result to the derivative of (1) shown in the preceding step.`);
     ST(p,6,[`${LE('∂(1)/∂z')} ∂²u/(∂z ∂t) = ${x('−(1/ρ₀)∂²p′/(∂z ∂x)')}`,`${LE('∂(2)/∂x')} ∂²w/(∂x ∂t) = ${x('−(1/ρ₀)∂²p′/(∂x ∂z)')} − (g/ρ₀)(∂ρ′/∂x)`],`<b>Subtract top minus bottom.</b> The two ${x('identical mixed pressure derivatives')} cancel because ∂²p′/(∂x∂z) = ∂²p′/(∂z∂x).`,{kind:'cancel'});
@@ -769,6 +815,7 @@ function attachVisualMoves(p,id,v){
   }
   case 6: {
     ST(p,0,[`${LE('(M)')} ∂u/∂t + ${x('u∂u/∂x')} = −g∂η/∂x`,`${LE('(C)')} ∂η/∂t + h∂u/∂x + ${x('∂(ηu)/∂x')} = 0`],`Linearize by neglecting ${x('products of small perturbations')}. These are the two equations on Lecture 17 slide 12.`,{kind:'both'});
+    ST(p,1,[`${LE('(M)')} ∂u/∂t = −g∂η/∂x`,`${LE('(C)')} ∂η/∂t + h∂u/∂x = 0`],`<b>Bookkeeping — no algebra yet.</b> Two equations, two unknown fields. Keep ${g('u')} because the wall condition (u = 0) is written in u; eliminate η.`);
     ST(p,2,`${LE('(M)')} ∂u/∂t = −g∂η/∂x`,`Apply ${g('∂/∂t')} to every term. This creates the mixed η derivative that continuity can replace.`);
     ST(p,3,`${LE('(C)')} ∂η/∂t + h∂u/∂x = 0`,`Apply ${g('∂/∂x')} and solve for the mixed η derivative.`);
     ST(p,4,[`∂²u/∂t² = −g${x('∂²η/(∂x ∂t)')}`,`∂²η/(∂x ∂t) = ${g('−h∂²u/∂x²')}`],`<b>Substitute</b> the continuity result for ${x('the η derivative')}. The negative signs multiply to positive; only u remains.`,{kind:'both'});
@@ -796,6 +843,7 @@ function attachVisualMoves(p,id,v){
     ST(p,0,[`f = const; h₀ = const`,`∂/∂y = 0`,`ū=v̄=η̄=0; weak disturbances`],`These are Lecture 16 slide 3 assumptions. They determine what survives linearization.`);
     ST(p,1,[`${LE('(1 full)')} du/dt − fv = −g∂η/∂x`,`${LE('(2 full)')} dv/dt + fu = −g∂η/∂y`,`${LE('(3 full)')} ∂η/∂t + ∂[(h₀+η)u]/∂x + ∂[(h₀+η)v]/∂y = 0`],`Start with the three rotating shallow-water equations before linearization. The nonlinear material derivatives contain advection.`);
     ST(p,2,[`${LE('(1)')} ∂u/∂t + ${x('u∂u/∂x')} + ${x('v∂u/∂y')} − fv = −g∂η/∂x`,`${LE('(2)')} ∂v/∂t + ${x('u∂v/∂x')} + ${x('v∂v/∂y')} + fu = −g${x('∂η/∂y')}`,`${LE('(3)')} ∂η/∂t + h₀∂u/∂x + ${x('∂(ηu)/∂x')} + ${x('∂[(h₀+η)v]/∂y')} = 0`],`<b>Red:</b> discard advection and ηu products (second order), and all y derivatives (x-only waves). Remaining equations are exactly those displayed below.`,{kind:'cancel'});
+    ST(p,3,[`${LE('(1)')} ∂u/∂t − fv = −g∂η/∂x`,`${LE('(2)')} ∂v/∂t + fu = 0`,`${LE('(3)')} ∂η/∂t + h₀∂u/∂x = 0`],`<b>Bookkeeping — no algebra yet.</b> Three equations, three unknown fields. Keep ${g('u')}; remove v (it only enters through f) and then η (through continuity).`);
     ST(p,4,`${LE('(1)')} ∂u/∂t − fv = −g∂η/∂x`,`Apply ${g('∂/∂t')} to the entire equation, producing −f∂v/∂t.`);
     ST(p,5,`${LE('(2)')} ∂v/∂t + fu = 0`,`Multiply the entire equation by ${g('f')} so the term +f∂v/∂t can cancel the negative copy.`);
     ST(p,6,[`${LE('∂(1)/∂t')} ∂²u/∂t² ${x('− f∂v/∂t')} = −g∂²η/(∂x ∂t)`,`${LE('f×(2)')} ${x('+ f∂v/∂t')} + f²u = 0`],`<b>Add the two rows.</b> ${x('−f∂v/∂t')} and ${x('+f∂v/∂t')} cancel exactly. v has disappeared.`,{kind:'cancel'});
@@ -813,7 +861,603 @@ function attachVisualMoves(p,id,v){
   return p;
 }
 
-const builders=[structured1,structured2,structured3,structured4,structured5,structured6,structured7,structured8,structured9].map((build,id)=>v=>attachVisualMoves(build(v),id,v));
+/* ---------- Version 10: render helpers for the new step pieces ---------- */
+const OPS={setup:['◇','Set up'],diff:['∂','Differentiate'],mult:['×','Multiply'],add:['+','Add rows'],subtract:['−','Subtract rows'],subst:['⇄','Substitute'],cancel:['╱','Cancel'],neglect:['≈','Neglect small'],solve:['↔','Rearrange'],wave:['∿','Trial wave'],num:['#','Numbers'],check:['✓','Check']};
+function opTagsHtml(s){return s.tags?`<div class="op-tags">${s.tags.map(t=>OPS[t]?`<span class="op-tag op-${t}"><i>${OPS[t][0]}</i>${OPS[t][1]}</span>`:'').join('')}</div>`:''}
+function trackHtml(s){
+ if(!s.track)return '';
+ const items=s.track.split(' '),alive=items.filter(t=>t[0]!=='-').length;
+ return `<div class="unknowns"><span class="uk-label">Unknown fields left</span>${items.map(t=>t[0]==='-'?`<span class="uk gone">${t.slice(1)}</span>`:t[0]==='*'?`<span class="uk keep">${t.slice(1)}</span>`:`<span class="uk">${t}</span>`).join('')}${alive===1?'<span class="uk-done">1 equation · 1 unknown ✓</span>':''}</div>`;
+}
+function workHtml(s){
+ const w=s.work;if(!w)return '';
+ const src=w.source&&w.source.length?`<div class="move-caption">Equation(s) used at this step</div><div class="move-source-lines">${w.source.map(z=>`<div class="move-source-line">${phoneEquation(z)}</div>`).join('')}</div>`:'';
+ const op=w.operation?`<div class="move-caption">Operation / substitution</div><div class="move-action">${w.operation}</div>`:'';
+ const rule=w.rule?`<div class="rule-card"><span class="rule-name">Rule used · ${w.rule[0]}</span><span class="rule-formula">${w.rule[1]}</span></div>`:'';
+ const fig=w.figure?`<div class="move-figure">${w.figure}</div>`:'';
+ const lines=w.lines&&w.lines.length?`<div class="move-caption">Line by line</div><ol class="derive">${w.lines.map(([e,n])=>`<li><div class="derive-eq">${phoneEquation(e)}</div>${n?`<div class="derive-note">${n}</div>`:''}</li>`).join('')}</ol>`:'';
+ if(!(src||op||rule||fig||lines))return '';
+ return `<div class="move-panel">${src}${op}${rule}${fig}${lines}</div><div class="move-result-label">Result of this operation</div>`;
+}
+function angleSketch(angle){
+ const r=angle*PI/180,theta=90-angle;
+ const kX=(128+95*Math.cos(r)).toFixed(1),kY=(91-95*Math.sin(r)).toFixed(1);
+ const eX=(128+68*Math.sin(r)).toFixed(1),eY=(91+68*Math.cos(r)).toFixed(1);
+ const ax=(128+34*Math.cos(r/2)).toFixed(1),ay=(91-34*Math.sin(r/2)).toFixed(1);
+ return `<svg class="angle-figure" viewBox="0 0 340 186" role="img" aria-label="Wavevector K at ${angle} degrees above horizontal; crests and energy run perpendicular to K at ${theta} degrees below horizontal">
+  <defs><marker id="v10-arrow-blue" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="#2372a6"/></marker><marker id="v10-arrow-teal" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="#13856c"/></marker></defs>
+  <line x1="28" y1="91" x2="316" y2="91" stroke="#92a7b5" stroke-width="1.6"/>
+  <text x="300" y="82" fill="#52697a" font-size="12">x →</text>
+  <line x1="${(128+95*Math.cos(r)).toFixed(1)}" y1="91" x2="${kX}" y2="${kY}" stroke="#2372a6" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="${(128+40*Math.cos(r)).toFixed(1)}" y="106" fill="#2372a6" font-size="12" font-weight="700">|k| = |K| cos φ</text>
+  <line x1="128" y1="91" x2="${kX}" y2="${kY}" stroke="#2372a6" stroke-width="3.5" stroke-linecap="round" marker-end="url(#v10-arrow-blue)"/>
+  <line x1="128" y1="91" x2="${eX}" y2="${eY}" stroke="#13856c" stroke-width="3.5" stroke-linecap="round" marker-end="url(#v10-arrow-teal)"/>
+  <path d="M162 91 A34 34 0 0 0 ${(128+34*Math.cos(r)).toFixed(1)} ${(91-34*Math.sin(r)).toFixed(1)}" fill="none" stroke="#2372a6" stroke-width="1.5"/>
+  <text x="${(Number(ax)+6).toFixed(1)}" y="${(Number(ay)+4).toFixed(1)}" fill="#236b99" font-size="12" font-weight="700">φ</text>
+  <circle cx="128" cy="91" r="3.5" fill="#203e4d"/>
+  <text x="${(Number(kX)-30).toFixed(1)}" y="${Math.max(16,Number(kY)-8).toFixed(1)}" fill="#236b99" font-size="12.5" font-weight="700">K (k, m): φ = ${angle}°</text>
+  <text x="${(Number(eX)+6).toFixed(1)}" y="${Math.min(170,Number(eY)+2).toFixed(1)}" fill="#13755f" font-size="12.5" font-weight="700">crests / energy: θ = ${theta}°</text>
+  <text x="14" y="181" fill="#516977" font-size="11">K ⟂ crests. Parcels slide along the crests.</text>
+ </svg>`;
+}
+
+/* ---------- Version 10: line-by-line algebra, rules, move tags and unknown tracking ---------- */
+const R_SIN=['Chain rule on a sinusoid','∂(cos Φ)/∂x = −sin Φ·(∂Φ/∂x); &nbsp; ∂(sin Φ)/∂x = cos Φ·(∂Φ/∂x). Two derivatives return −(factor)² × the original.'];
+const R_MIXED=['Mixed partials commute','∂²F/(∂x∂t) = ∂²F/(∂t∂x) for any smooth field F'];
+function enrich(p,id,v){
+ const x=strike,gr=substitute;
+ const ln=(eq,note)=>[eq,note||''];
+ const T=arr=>arr.forEach((t,i)=>{if(p.steps[i]&&t)p.steps[i].tags=t.split(' ')});
+ const K=obj=>Object.entries(obj).forEach(([i,t])=>{if(p.steps[i])p.steps[i].track=t});
+ const E=(i,lines,rule,figure)=>{const s=p.steps[i];if(!s)return;if(!s.work)s.work={source:[],operation:''};if(lines)s.work.lines=lines;if(rule)s.work.rule=rule;if(figure)s.work.figure=figure;};
+ switch(id){
+ case 0:{ // capillary minimum
+  const {gamma,rho,g:G}=v,ratio=rho*G/gamma,km=Math.sqrt(ratio),Lm=2*PI/km,inside=4*G*gamma/rho,cm=Math.pow(inside,.25);
+  T(['subst solve','diff','solve','diff check','num','num','subst solve num']);
+  E(0,[
+   ln('c = ω/k &nbsp;⇒&nbsp; c² = ω²/k²','Square both sides. c &gt; 0, so the minimum of c² sits at the same k as the minimum of c.'),
+   ln(`c² = ${gr('[gk + (γ/ρ)k³]')} / k²`,'Substitute the given ω².'),
+   ln('c² = gk/k² + (γ/ρ)k³/k²','Divide <b>each</b> term of the numerator by k².'),
+   ln('c² = g/k + (γ/ρ)k','Cancel powers of k: k/k² = 1/k and k³/k² = k.')
+  ]);
+  E(1,[
+   ln('g/k = g·k<sup>−1</sup>','Rewrite as a power so the power rule applies.'),
+   ln('d(g·k<sup>−1</sup>)/dk = g·(−1)·k<sup>−2</sup> = −g/k²','Power rule with n = −1. g is a constant multiplier.'),
+   ln('d[(γ/ρ)·k]/dk = (γ/ρ)·1 = γ/ρ','Power rule with n = 1. γ/ρ is a constant multiplier.'),
+   ln('d(c²)/dk = −g/k² + γ/ρ','The derivative of a sum is the sum of the derivatives.')
+  ],['Power rule','d(kⁿ)/dk = n·kⁿ⁻¹']);
+  E(2,[
+   ln('−g/k² + γ/ρ = 0','Stationary point: slope = 0.'),
+   ln('γ/ρ = g/k²','Add g/k² to both sides.'),
+   ln('(γ/ρ)·k² = g','Multiply both sides by k².'),
+   ln('k² = ρg/γ','Multiply both sides by ρ/γ.'),
+   ln('k<sub>m</sub> = √(ρg/γ)','Square root; keep the positive root because k &gt; 0.')
+  ]);
+  E(3,[
+   ln('d(c²)/dk = −g·k<sup>−2</sup> + γ/ρ','First derivative, written with powers.'),
+   ln('d²(c²)/dk² = −g·(−2)·k<sup>−3</sup> + 0 = 2g/k³','Power rule (n = −2); the constant γ/ρ differentiates to 0.'),
+   ln('2g/k³ &gt; 0 for every k &gt; 0','Positive second derivative ⇒ ∪-shaped curve ⇒ the stationary point is a minimum.')
+  ],['Second-derivative test','f′ = 0 and f″ &gt; 0 ⇒ minimum']);
+  E(4,[
+   ln(`ρg/γ = (${rho} × ${G}) / ${gamma} = ${fmt(ratio,5)} m<sup>−2</sup>`,'Multiply first, then divide.'),
+   ln(`k<sub>m</sub> = √(${fmt(ratio,5)}) = ${fmt(km,5)} m<sup>−1</sup>`,'Square root.')
+  ]);
+  E(5,[
+   ln(`L<sub>m</sub> = 2π / ${fmt(km,5)} = ${fmt(2*PI,5)} / ${fmt(km,5)}`,'2π ≈ 6.2832 radians per wavelength.'),
+   ln(`L<sub>m</sub> = ${fmt(Lm,4)} m = ${fixed(100*Lm,2)} cm`,'Metres × 100 = centimetres.')
+  ]);
+  E(6,[
+   ln('γ/ρ = g/k<sub>m</sub>² &nbsp;⇒&nbsp; (γ/ρ)k<sub>m</sub> = g/k<sub>m</sub>','From step 3, multiplied by k<sub>m</sub>: at the minimum the two terms of c² are equal.'),
+   ln(`c<sub>m</sub>² = g/k<sub>m</sub> + ${gr('g/k<sub>m</sub>')} = 2g/k<sub>m</sub>`,'Replace the capillary term by its equal.'),
+   ln(`c<sub>m</sub>² = 2g / ${gr('√(ρg/γ)')} = 2g·√(γ/(ρg))`,'Substitute k<sub>m</sub>. Dividing by √A is the same as multiplying by √(1/A).'),
+   ln('c<sub>m</sub>² = 2√(g²γ/(ρg)) = 2√(gγ/ρ)','Move g inside the root as g², then cancel one g.'),
+   ln('c<sub>m</sub>² = √(4gγ/ρ) &nbsp;⇒&nbsp; c<sub>m</sub> = (4gγ/ρ)<sup>1/4</sup>','Move the 2 inside as 4. A square root of a square root is a ¼ power.'),
+   ln(`c<sub>m</sub> = (4 × ${G} × ${gamma} / ${rho})<sup>1/4</sup> = (${fmt(inside,4)})<sup>1/4</sup> = ${fmt(cm,4)} m/s`,'Numbers last.'),
+   ln(`Check: √(2g/k<sub>m</sub>) = √(2 × ${G} / ${fmt(km,5)}) = ${fmt(Math.sqrt(2*G/km),4)} m/s ✓`,'Same answer from the un-simplified form.')
+  ]);
+  break;
+ }
+ case 1:{ // finite-depth swell
+  const {L:Lw,h,g:G}=v,k=2*PI/Lw,q=k*h,th=Math.tanh(q),c2=G*th/k,c=Math.sqrt(c2),s2=Math.sinh(2*q),r=2*q/s2,br=1+r,cg=c/2*br;
+  const regime=q<PI/10?'shallow water — but keep tanh anyway for accuracy':q>PI?'deep water — but keep tanh anyway for accuracy':'intermediate depth: neither shortcut is allowed, keep tanh(kh)';
+  T(['num','num check','subst solve','num','diff','subst solve','num','check']);
+  E(0,[ln(`k = 2π / ${Lw} = ${fmt(2*PI,5)} / ${Lw} = ${fmt(k,5)} m<sup>−1</sup>`,'One wavelength = one 2π-radian cycle.')]);
+  E(1,[
+   ln(`kh = ${fmt(k,5)} × ${h} = ${fmt(q,4)}`,'Dimensionless: (1/m) × m.'),
+   ln('Shallow if kh &lt; π/10 ≈ 0.31; &nbsp; deep if kh &gt; π ≈ 3.14','Same as h &lt; L/20 (shallow) or h &gt; L/2 (deep).'),
+   ln(`kh = ${fmt(q,3)} ⇒ ${regime}`,'')
+  ]);
+  E(2,[
+   ln('c = ω/k &nbsp;⇒&nbsp; c² = ω²/k²','Square the definition of phase speed.'),
+   ln(`c² = ${gr('gk·tanh(kh)')} / k²`,'Substitute ω² from the dispersion relation.'),
+   ln('c² = (g/k)·tanh(kh)','Cancel one k: k/k² = 1/k.')
+  ]);
+  E(3,[
+   ln(`tanh(${fmt(q,4)}) = ${fmt(th,5)}`,'Calculator: hyp → tanh. kh is a pure number.'),
+   ln(`g/k = ${G} / ${fmt(k,5)} = ${fmt(G/k,5)} m²/s²`,'Units: (m/s²)/(1/m) = m²/s².'),
+   ln(`c² = ${fmt(G/k,5)} × ${fmt(th,5)} = ${fmt(c2,5)} m²/s²`,''),
+   ln(`c = √(${fmt(c2,5)}) = ${fmt(c,5)} m/s`,'Positive root.')
+  ]);
+  E(4,[
+   ln('d(ω²)/dk = 2ω·(dω/dk)','Chain rule: ω itself depends on k.'),
+   ln('d[k·tanh(kh)]/dk = (1)·tanh(kh) + k·d[tanh(kh)]/dk','Product rule on k × tanh(kh).'),
+   ln('d[tanh(kh)]/dk = sech²(kh)·h','Chain rule: tanh′ = sech², times the inner derivative d(kh)/dk = h.'),
+   ln('2ω(dω/dk) = g[tanh(kh) + kh·sech²(kh)]','Put both sides together; g is a constant.')
+  ],['Product + chain rule','(FG)′ = F′G + FG′; &nbsp; d tanh(u)/dk = sech²(u)·(du/dk)']);
+  E(5,[
+   ln('dω/dk = g[tanh(kh) + kh·sech²(kh)] / (2ω)','Divide both sides by 2ω.'),
+   ln('dω/dk = g·tanh(kh)·[1 + kh·sech²(kh)/tanh(kh)] / (2ω)','Factor tanh(kh) out of the bracket.'),
+   ln(`g·tanh(kh) = ${gr('ω²/k')}`,'From ω² = gk·tanh(kh), divided by k.'),
+   ln(`dω/dk = (${gr('ω²/k')})·[1 + kh·sech²(kh)/tanh(kh)] / (2ω)`,'Substitute.'),
+   ln(`dω/dk = (ω/2k)·[1 + kh·sech²(kh)/tanh(kh)]`,'Cancel one ω: ω²/ω = ω.'),
+   ln(`c<sub>g</sub> = (${gr('c')}/2)·[1 + kh·sech²(kh)/tanh(kh)]`,'ω/k = c.'),
+   ln('sech²x / tanh x = (1/cosh²x)·(cosh x/sinh x) = 1/(sinh x·cosh x) = 2/sinh(2x)','Write sech and tanh with sinh and cosh, cancel one cosh, then use the identity.'),
+   ln('c<sub>g</sub> = (c/2)·[1 + 2kh/sinh(2kh)]','Identity with x = kh.')
+  ],['Double-angle identity','sinh(2x) = 2·sinh x·cosh x']);
+  E(6,[
+   ln(`2kh = 2 × ${fmt(q,4)} = ${fmt(2*q,4)}`,''),
+   ln(`sinh(${fmt(2*q,4)}) = ${fmt(s2,5)}`,'Calculator: hyp → sinh.'),
+   ln(`2kh/sinh(2kh) = ${fmt(2*q,4)} / ${fmt(s2,5)} = ${fmt(r,4)}`,''),
+   ln(`c<sub>g</sub> = (${fmt(c,5)}/2) × (1 + ${fmt(r,4)}) = ${fmt(c/2,5)} × ${fmt(br,4)} = ${fmt(cg,5)} m/s`,'Half of c, times the bracket.')
+  ]);
+  E(7,[
+   ln(`c<sub>g</sub>/c = ${fmt(cg,4)} / ${fmt(c,4)} = ${fmt(cg/c,4)}`,'Must lie between ½ and 1.'),
+   ln('kh → ∞: 2kh/sinh(2kh) → 0 &nbsp;⇒&nbsp; c<sub>g</sub> → c/2','Deep-water limit.'),
+   ln('kh → 0: sinh(2kh) ≈ 2kh &nbsp;⇒&nbsp; c<sub>g</sub> → c','Shallow-water limit (non-dispersive).')
+  ]);
+  break;
+ }
+ case 2:{ // internal wave
+  const {N,angle}=v,phi=angle*PI/180,cs=Math.cos(phi),sn=Math.sin(phi),om=N*cs,T0=2*PI/om,TN=2*PI/N,omA=N*sn,TA=2*PI/omA;
+  T(['setup','neglect','neglect','setup','diff','diff','subtract cancel','diff','subst','solve','diff','subst','solve','wave','diff','subst cancel solve','subst','num','num check','check']);
+  K({3:'*w u p′ ρ′',6:'*w u -p′ ρ′',8:'*w u -p′ -ρ′',9:'*w u -p′ -ρ′',11:'*w -u -p′ -ρ′',12:'*w -u -p′ -ρ′'});
+  E(0,[
+   ln('ρ(x,z,t) = ρ̄(z) + ρ′(x,z,t), &nbsp; |ρ′| ≪ ρ̄','Background depends on z only; the prime marks the small wave disturbance.'),
+   ln('dp̄/dz = −g·ρ̄(z)','Hydrostatic background: its weight is held up by its own vertical pressure gradient.')
+  ]);
+  E(1,[
+   ln('u(∂u/∂x), w(∂u/∂z), u(∂w/∂x), w(∂w/∂z) = (small) × (small)','Products of two perturbations are second order ⇒ drop.'),
+   ln('Vertical force: −(1/ρ₀)∂(p̄ + p′)/∂z − g(ρ̄ + ρ′)/ρ₀','Split pressure and density into background + perturbation.'),
+   ln(`= ${x('−(1/ρ₀)dp̄/dz − gρ̄/ρ₀')} − (1/ρ₀)∂p′/∂z − gρ′/ρ₀`,'Hydrostatic: −dp̄/dz = gρ̄, so the two background terms cancel exactly.'),
+   ln('∂w/∂t = −(1/ρ₀)∂p′/∂z − gρ′/ρ₀','Only perturbation pressure and perturbation buoyancy drive w.')
+  ]);
+  E(2,[
+   ln('∂ρ/∂t = ∂ρ̄/∂t + ∂ρ′/∂t = 0 + ∂ρ′/∂t','The background does not change in time.'),
+   ln(`u(∂ρ/∂x) = u(${x('∂ρ̄/∂x')} + ∂ρ′/∂x) → ${x('u∂ρ′/∂x')}`,'ρ̄ has no x-dependence; u∂ρ′/∂x is second order.'),
+   ln(`w(∂ρ/∂z) = w(dρ̄/dz) + ${x('w∂ρ′/∂z')}`,'Keep w·dρ̄/dz: small × background = first order.'),
+   ln('∂ρ′/∂t + w(dρ̄/dz) = 0','A parcel lifted by w carries its density into lighter surroundings.')
+  ]);
+  E(3,[
+   ln('4 equations · 4 unknown fields (u, w, p′, ρ′)','A closed system.'),
+   ln('p′ (cross-differentiate 1 &amp; 2) → ρ′ (use 3) → u (use 4)','Plan the order before differentiating anything.')
+  ]);
+  E(4,[
+   ln('∂/∂z(∂u/∂t) = ∂²u/(∂z∂t)','Left side.'),
+   ln('∂/∂z[−(1/ρ₀)∂p′/∂x] = −(1/ρ₀)∂²p′/(∂z∂x)','ρ₀ is a constant, so it passes straight through ∂/∂z.')
+  ]);
+  E(5,[
+   ln('∂/∂x(∂w/∂t) = ∂²w/(∂x∂t)','Left side.'),
+   ln('∂/∂x[−(1/ρ₀)∂p′/∂z] = −(1/ρ₀)∂²p′/(∂x∂z)','Pressure term.'),
+   ln('∂/∂x[−gρ′/ρ₀] = −(g/ρ₀)∂ρ′/∂x','Buoyancy term; g/ρ₀ is a constant.')
+  ]);
+  E(6,[
+   ln('∂²u/(∂z∂t) − ∂²w/(∂x∂t) = [−(1/ρ₀)∂²p′/(∂z∂x)] − [−(1/ρ₀)∂²p′/(∂x∂z) − (g/ρ₀)∂ρ′/∂x]','(Top row) − (bottom row): left minus left, right minus right.'),
+   ln(`= ${x('−(1/ρ₀)∂²p′/(∂z∂x)')} ${x('+ (1/ρ₀)∂²p′/(∂x∂z)')} + (g/ρ₀)∂ρ′/∂x`,'Distribute the minus sign. The two pressure terms are equal and opposite.'),
+   ln('∂/∂t[∂u/∂z − ∂w/∂x] = (g/ρ₀)∂ρ′/∂x','Factor the common ∂/∂t out of the left side.')
+  ],R_MIXED);
+  E(7,[
+   ln('∂/∂t{∂/∂t[∂u/∂z − ∂w/∂x]} = ∂²/∂t²[∂u/∂z − ∂w/∂x]','Left side.'),
+   ln('∂/∂t[(g/ρ₀)∂ρ′/∂x] = (g/ρ₀)∂²ρ′/(∂t∂x) = (g/ρ₀)∂/∂x(∂ρ′/∂t)','Swap the order so ∂ρ′/∂t appears — the quantity equation (3) supplies.')
+  ],R_MIXED);
+  E(8,[
+   ln('∂ρ′/∂t = −w(dρ̄/dz)','Solve (3) for ∂ρ′/∂t.'),
+   ln(`(g/ρ₀)·∂/∂x(${gr('−w·dρ̄/dz')})`,'Substitute into the right side.'),
+   ln('= −(g/ρ₀)(dρ̄/dz)·∂w/∂x','dρ̄/dz depends on z only, so it passes through ∂/∂x.'),
+   ln(`= ${gr('N²')}·∂w/∂x`,'Definition: N² = −(g/ρ₀)(dρ̄/dz). Positive because density decreases upward.')
+  ]);
+  E(9,[
+   ln('∂²/∂t²[∂u/∂z − ∂w/∂x] = N²∂w/∂x','Result of the previous step.'),
+   ln('∂²/∂t²[∂u/∂z − ∂w/∂x] − N²∂w/∂x = 0','Subtract N²∂w/∂x from both sides.')
+  ]);
+  E(10,[
+   ln('∂/∂x{∂²/∂t²[∂u/∂z]} = ∂²/∂t²[∂²u/(∂x∂z)]','x and t derivatives can be applied in any order.'),
+   ln('∂/∂x{∂²/∂t²[∂w/∂x]} = ∂²/∂t²[∂²w/∂x²]',''),
+   ln('∂/∂x[N²·∂w/∂x] = N²·∂²w/∂x²','N is taken as constant (uniform stratification).')
+  ]);
+  E(11,[
+   ln('∂u/∂x = −∂w/∂z','Solve continuity (4) for ∂u/∂x.'),
+   ln('∂/∂z(∂u/∂x) = ∂/∂z(−∂w/∂z) &nbsp;⇒&nbsp; ∂²u/(∂x∂z) = −∂²w/∂z²','Differentiate that in z.'),
+   ln(`∂²/∂t²[${gr('−∂²w/∂z²')} − ∂²w/∂x²] − N²∂²w/∂x² = 0`,'Substitute. u is gone.')
+  ]);
+  E(12,[
+   ln('−∂²/∂t²[∂²w/∂z² + ∂²w/∂x²] − N²∂²w/∂x² = 0','Pull a −1 out of the bracket.'),
+   ln('∂²/∂t²[∂²w/∂x² + ∂²w/∂z²] + N²∂²w/∂x² = 0','Multiply every term by −1.')
+  ]);
+  E(13,[
+   ln('Φ = kx + mz − ωt','Phase. k, m = horizontal and vertical wavenumbers; ω = the unknown frequency.'),
+   ln('∂Φ/∂x = k; &nbsp; ∂Φ/∂z = m; &nbsp; ∂Φ/∂t = −ω','Inner derivatives — the chain rule will bring these down.')
+  ]);
+  E(14,[
+   ln('∂w/∂x = −A sinΦ·k; &nbsp; ∂²w/∂x² = −A cosΦ·k² = −k²w','cos → −sin → −cos; each x-derivative brings a factor k.'),
+   ln('∂w/∂z = −A sinΦ·m; &nbsp; ∂²w/∂z² = −m²w','Same pattern with m.'),
+   ln('∂w/∂t = −A sinΦ·(−ω) = +ωA sinΦ; &nbsp; ∂²w/∂t² = ωA cosΦ·(−ω) = −ω²w','Each t-derivative brings a factor −ω; two of them give −ω².')
+  ],R_SIN);
+  E(15,[
+   ln(`∂²w/∂x² + ∂²w/∂z² = ${gr('−k²w')} + ${gr('−m²w')} = −(k² + m²)w`,'Inside the bracket first.'),
+   ln('∂²/∂t²[−(k²+m²)w] = −(k²+m²)·∂²w/∂t²','k² + m² is a constant, so it passes through ∂²/∂t².'),
+   ln(`= −(k²+m²)·(${gr('−ω²w')}) = +ω²(k²+m²)w`,'Two negatives make a positive.'),
+   ln(`N²∂²w/∂x² = N²·(${gr('−k²w')}) = −N²k²w`,'Buoyancy term.'),
+   ln(`ω²(k²+m²)w − N²k²w = 0 &nbsp;⇒&nbsp; [ω²(k²+m²) − N²k²]${x('w')} = 0`,'Factor w. A real wave has w ≠ 0, so divide it away.'),
+   ln('ω²(k²+m²) = N²k² &nbsp;⇒&nbsp; ω² = N²k²/(k²+m²)','Add N²k² to both sides, then divide by (k² + m²).')
+  ]);
+  E(16,[
+   ln('ω = N·|k| / √(k² + m²)','Positive square root of both sides.'),
+   ln('|K| = √(k² + m²); &nbsp; |k| = |K|·cos φ','Wavevector triangle: k is the side adjacent to φ (see sketch).'),
+   ln(`ω = N·${x('|K|')}cos φ / ${x('|K|')} = N cos φ`,'Substitute and cancel |K|.')
+  ],null,angleSketch(angle));
+  E(17,[
+   ln(`cos(${angle}°) = ${fixed(cs,4)}`,'Calculator in DEGREE mode.'),
+   ln(`ω = ${fmt(N,3)} × ${fixed(cs,4)} = ${fmt(om,5)} s<sup>−1</sup>`,'')
+  ]);
+  E(18,[
+   ln(`T = 2π/ω = ${fmt(2*PI,5)} / ${fmt(om,5)} = ${fmt(T0,5)} s`,''),
+   ln(`${fmt(T0,5)} s ÷ 60 = ${fixed(T0/60,2)} min`,'Seconds → minutes.'),
+   ln(`Check: 2π/N = ${fmt(TN,5)} s = ${fixed(TN/60,2)} min ≤ T ✓`,'An internal wave can never oscillate faster than N, so T ≥ 2π/N.')
+  ]);
+  E(19,[
+   ln('θ = 90° − φ &nbsp;⇒&nbsp; sin θ = cos φ','Energy (group velocity) runs along the crests, perpendicular to K.'),
+   ln(`If θ = ${angle}°: ω = N sin θ = ${fmt(N,3)} × ${fixed(sn,4)} = ${fmt(omA,5)} s<sup>−1</sup>`,''),
+   ln(`T = 2π/ω = ${fmt(TA,5)} s = ${fixed(TA/60,2)} min`,'Use this only if the question says the ENERGY travels at the angle.')
+  ]);
+  break;
+ }
+ case 3:{ // Poincaré currents
+  const {L:Lw,h,f,g:G,eta}=v,k=2*PI/Lw,ghk2=G*h*k*k,om2=f*f+ghk2,om=Math.sqrt(om2),hk=h*k,U=om*eta/hk,V=f*eta/hk;
+  T(['setup','diff','mult','add cancel','diff','mult','solve','subst cancel','solve','wave','diff','subst','cancel solve','num','num','setup','diff subst cancel','num','diff subst cancel','subst cancel num','check']);
+  K({0:'*u v η',3:'*u -v η',7:'*u -v -η',8:'*u -v -η'});
+  E(1,[
+   ln('∂/∂t(∂u/∂t) = ∂²u/∂t²','First term.'),
+   ln('∂/∂t(−f·v) = −f·∂v/∂t','f is constant (f-plane), so it stays outside the derivative.'),
+   ln('∂/∂t(−g·∂η/∂x) = −g·∂²η/(∂x∂t)','g is constant; the order of ∂x and ∂t does not matter.')
+  ]);
+  E(2,[
+   ln('f·(∂v/∂t) + f·(fu) = f·0','Multiply every term on both sides by f.'),
+   ln('f∂v/∂t + f²u = 0','f·f = f².')
+  ]);
+  E(3,[
+   ln(`[∂²u/∂t² ${x('− f∂v/∂t')}] + [${x('+ f∂v/∂t')} + f²u] = −g∂²η/(∂x∂t) + 0`,'Add left sides together and right sides together.'),
+   ln('∂²u/∂t² + f²u = −g∂²η/(∂x∂t)','−f∂v/∂t + f∂v/∂t = 0, so v is gone.')
+  ]);
+  E(4,[
+   ln('∂/∂x(∂η/∂t) = ∂²η/(∂x∂t)',''),
+   ln('∂/∂x(h·∂u/∂x) = h·∂²u/∂x²','h is constant (flat bottom).'),
+   ln('∂/∂x(0) = 0','')
+  ]);
+  E(5,[
+   ln('(−g)·∂²η/(∂x∂t) + (−g)·h∂²u/∂x² = (−g)·0','Multiply every term by −g.'),
+   ln('−g∂²η/(∂x∂t) − gh∂²u/∂x² = 0','')
+  ]);
+  E(6,[
+   ln('−g∂²η/(∂x∂t) − gh∂²u/∂x² + gh∂²u/∂x² = 0 + gh∂²u/∂x²','Add gh∂²u/∂x² to both sides.'),
+   ln('−g∂²η/(∂x∂t) = gh∂²u/∂x²','An exact replacement rule for the η term.')
+  ]);
+  E(7,[
+   ln(`∂²u/∂t² + f²u = ${x('−g∂²η/(∂x∂t)')}`,'The η term we want to remove (from step 4).'),
+   ln(`∂²u/∂t² + f²u = ${gr('gh∂²u/∂x²')}`,'Replace it with its equal (from step 7).')
+  ],R_MIXED);
+  E(8,[
+   ln('∂²u/∂t² + f²u − gh∂²u/∂x² = gh∂²u/∂x² − gh∂²u/∂x²','Subtract gh∂²u/∂x² from both sides.'),
+   ln('∂²u/∂t² + f²u − gh∂²u/∂x² = 0','')
+  ]);
+  E(9,[ln('Φ = kx − ωt; &nbsp; ∂Φ/∂x = k; &nbsp; ∂Φ/∂t = −ω','The phase and its inner derivatives (needed for the chain rule).')]);
+  E(10,[
+   ln('∂u/∂t = Û(−sinΦ)·(−ω) = ωÛ sinΦ','cos → −sin, times ∂Φ/∂t = −ω.'),
+   ln('∂²u/∂t² = ωÛ(cosΦ)·(−ω) = −ω²Û cosΦ = −ω²u','sin → cos, times −ω again.'),
+   ln('∂u/∂x = Û(−sinΦ)·(k) = −kÛ sinΦ','cos → −sin, times ∂Φ/∂x = k.'),
+   ln('∂²u/∂x² = −kÛ(cosΦ)·(k) = −k²u','sin → cos, times k again.')
+  ],R_SIN);
+  E(11,[
+   ln(`(${gr('−ω²u')}) + f²u − gh·(${gr('−k²u')}) = 0`,'Replace each derivative.'),
+   ln('−ω²u + f²u + ghk²u = 0','−gh·(−k²u) = +ghk²u.'),
+   ln('(−ω² + f² + ghk²)·u = 0','Factor out the common u.')
+  ]);
+  E(12,[
+   ln(`(−ω² + f² + ghk²)·${x('u')} = 0 &nbsp;⇒&nbsp; −ω² + f² + ghk² = 0`,'u is not zero for a real wave, so divide it away.'),
+   ln('ω² = f² + ghk²','Add ω² to both sides.')
+  ]);
+  E(13,[ln(`k = 2π / ${Lw} = ${fmt(k,5)} m<sup>−1</sup>`,'L in metres.')]);
+  E(14,[
+   ln(`f² = (${fmt(f,3)})² = ${fmt(f*f,4)} s<sup>−2</sup>`,''),
+   ln(`ghk² = ${G} × ${h} × (${fmt(k,5)})² = ${fmt(ghk2,4)} s<sup>−2</sup>`,''),
+   ln(`ω² = ${fmt(f*f,4)} + ${fmt(ghk2,4)} = ${fmt(om2,4)} s<sup>−2</sup>`,'Add BEFORE taking the root.'),
+   ln(`ω = √(${fmt(om2,4)}) = ${fmt(om,5)} s<sup>−1</sup>`,`Rotation raises ω by ${fixed(100*(om/Math.sqrt(ghk2)-1),2)}% above the non-rotating √(gh)·k.`)
+  ]);
+  E(15,[
+   ln('η = η̂ cosΦ &nbsp;⇒&nbsp; ∂η/∂t ∝ sinΦ','Given surface shape; its time derivative is a sine.'),
+   ln('Continuity needs h·∂u/∂x ∝ sinΦ too &nbsp;⇒&nbsp; u ∝ cosΦ','Only a cosine in x differentiates into a sine, so u shares η’s phase.')
+  ]);
+  E(16,[
+   ln(`∂η/∂t = η̂(−sinΦ)·(−ω) = ${gr('ωη̂ sinΦ')}`,'Chain rule; ∂Φ/∂t = −ω.'),
+   ln(`h·∂u/∂x = hÛ(−sinΦ)·(k) = ${gr('−hkÛ sinΦ')}`,'Chain rule; ∂Φ/∂x = k.'),
+   ln('ωη̂ sinΦ − hkÛ sinΦ = 0','Substitute both into (3).'),
+   ln(`(ωη̂ − hkÛ)·${x('sinΦ')} = 0 &nbsp;⇒&nbsp; ωη̂ = hkÛ`,'Must hold at every x and t, so the coefficient is zero.'),
+   ln('Û = ωη̂ / (hk)','Divide both sides by hk.')
+  ],R_SIN);
+  E(17,[
+   ln(`hk = ${h} × ${fmt(k,5)} = ${fmt(hk,5)}`,'Denominator first.'),
+   ln(`ωη̂ = ${fmt(om,5)} × ${eta} = ${fmt(om*eta,5)} m/s`,'Numerator.'),
+   ln(`Û = ${fmt(om*eta,5)} / ${fmt(hk,5)} = ${fmt(U,5)} m/s`,'')
+  ]);
+  E(18,[
+   ln('fu ∝ cosΦ, so ∂v/∂t must ∝ cosΦ &nbsp;⇒&nbsp; v ∝ sinΦ','Only sin differentiates into cos: v is 90° out of phase with u.'),
+   ln(`∂v/∂t = V̂(cosΦ)·(−ω) = ${gr('−ωV̂ cosΦ')}`,'sin → cos, times ∂Φ/∂t = −ω.'),
+   ln(`−ωV̂ cosΦ + f·${gr('Û cosΦ')} = 0`,'Substitute into (2).'),
+   ln(`(−ωV̂ + fÛ)·${x('cosΦ')} = 0 &nbsp;⇒&nbsp; ωV̂ = fÛ &nbsp;⇒&nbsp; V̂ = fÛ/ω`,'Coefficient = 0, then divide by ω.')
+  ],R_SIN);
+  E(19,[
+   ln(`V̂ = f·${gr('[ωη̂/(hk)]')} / ω`,'Substitute Û.'),
+   ln(`V̂ = f${x('ω')}η̂ / (hk·${x('ω')}) = fη̂/(hk)`,'ω cancels top and bottom.'),
+   ln(`V̂ = (${fmt(f,3)} × ${eta}) / ${fmt(hk,5)} = ${fmt(V,5)} m/s`,'')
+  ]);
+  E(20,[
+   ln('∂u/∂t = ωÛ sinΦ; &nbsp; −fv = −fV̂ sinΦ','From the derivatives above.'),
+   ln('−g∂η/∂x = −g·η̂(−sinΦ)·k = gkη̂ sinΦ','Right side of (1).'),
+   ln('(ωÛ − fV̂)·sinΦ = gkη̂·sinΦ &nbsp;⇒&nbsp; ωÛ − fV̂ = gkη̂','Compare coefficients of sinΦ.'),
+   ln(`ω·${gr('ωη̂/(hk)')} − f·${gr('fη̂/(hk)')} = gkη̂`,'Insert Û and V̂.'),
+   ln('(ω² − f²)/(hk) = gk &nbsp;⇒&nbsp; ω² − f² = ghk² ✓','Cancel η̂, multiply by hk: the dispersion relation again.'),
+   ln(`Numbers: ω² − f² = ${fmt(om2-f*f,4)} &nbsp; and &nbsp; ghk² = ${fmt(ghk2,4)} ✓`,'')
+  ]);
+  break;
+ }
+ case 4:{ // Rossby group speed
+  const {beta,R}=v,a=1/(R*R),km=Math.sqrt(3)/R,cgm=beta*R*R/8,cph=-beta*R*R/4;
+  T(['setup subst','diff','solve check','diff','solve check','subst cancel','num','check']);
+  E(0,[
+   ln('R<sub>d</sub><sup>−2</sup> = 1/R<sub>d</sub>² = a','a is a positive constant: R<sub>d</sub> does not change with k.'),
+   ln(`a = 1/(${fmt(R,3)})² = ${fmt(a,4)} m<sup>−2</sup>`,'Its size, for later.')
+  ]);
+  E(1,[
+   ln('ω = −β·[k/(k² + a)]','Pull the constant −β out front.'),
+   ln('N = k, N′ = 1; &nbsp; D = k² + a, D′ = 2k','Name the numerator and denominator.'),
+   ln('d[k/(k²+a)]/dk = [1·(k²+a) − k·(2k)] / (k²+a)²','Quotient rule.'),
+   ln('= (k² + a − 2k²)/(k²+a)² = (a − k²)/(k²+a)²','Collect the k² terms.'),
+   ln('c<sub>g</sub> = −β·(a − k²)/(k²+a)² = β(k² − a)/(k²+a)²','Multiply by −β; −(a − k²) = k² − a.')
+  ],['Quotient rule','d(N/D)/dk = (N′D − ND′)/D²']);
+  E(2,[
+   ln('β &gt; 0 and (k²+a)² &gt; 0','The denominator is a square, so always positive.'),
+   ln('sign of c<sub>g</sub> = sign of (k² − a)',''),
+   ln('c<sub>g</sub> &gt; 0 ⇔ k² &gt; a = 1/R<sub>d</sub>² ⇔ |k| &gt; 1/R<sub>d</sub>','Short waves (wavelength &lt; 2πR<sub>d</sub>) carry energy east.')
+  ]);
+  E(3,[
+   ln('dc<sub>g</sub>/dk = (dc<sub>g</sub>/dq)·(dq/dk) = 2k·(dc<sub>g</sub>/dq)','Chain rule: for k ≠ 0, dc<sub>g</sub>/dk = 0 exactly when dc<sub>g</sub>/dq = 0. So q is a safe variable.'),
+   ln('N = q − a, N′ = 1; &nbsp; D = (q+a)², D′ = 2(q+a)','D′ uses the chain rule on a square.'),
+   ln('dc<sub>g</sub>/dq = β[1·(q+a)² − (q−a)·2(q+a)] / (q+a)⁴','Quotient rule.'),
+   ln('= β(q+a)[(q+a) − 2(q−a)] / (q+a)⁴','Factor (q + a) out of the numerator.'),
+   ln('= β[(q+a) − 2(q−a)] / (q+a)³','Cancel one (q + a): (q+a)/(q+a)⁴ = 1/(q+a)³.'),
+   ln('= β(q + a − 2q + 2a)/(q+a)³ = β(3a − q)/(q+a)³','Expand −2(q − a) = −2q + 2a, then collect.')
+  ],['Quotient + chain rule','d(N/D)/dq = (N′D − ND′)/D²; &nbsp; d(q+a)²/dq = 2(q+a)']);
+  E(4,[
+   ln('β(3a − q)/(q+a)³ = 0 &nbsp;⇒&nbsp; 3a − q = 0','A fraction is zero only when its numerator is zero.'),
+   ln('q = 3a &nbsp;⇒&nbsp; k² = 3/R<sub>d</sub>² &nbsp;⇒&nbsp; |k| = √3/R<sub>d</sub>','Undo q = k² and a = 1/R<sub>d</sub>².'),
+   ln('q &lt; 3a: slope &gt; 0 (rising); &nbsp; q &gt; 3a: slope &lt; 0 (falling)','Sign changes + → − ⇒ maximum.'),
+   ln(`|k| = √3 / ${fmt(R,3)} = ${fmt(km,4)} m<sup>−1</sup> &nbsp;(wavelength ${fmt(2*PI/km/1000,4)} km)`,'')
+  ]);
+  E(5,[
+   ln(`Numerator: ${gr('q')} − a = ${gr('3a')} − a = 2a`,''),
+   ln(`Denominator: (${gr('3a')} + a)² = (4a)² = 16a²`,''),
+   ln('c<sub>g,max</sub> = β·2a/(16a²) = β/(8a)','2a/16a² = 1/(8a): cancel the 2 and one a.'),
+   ln(`c<sub>g,max</sub> = β·${gr('R<sub>d</sub>²')}/8`,'1/a = R<sub>d</sub>².')
+  ]);
+  E(6,[
+   ln(`R<sub>d</sub>² = (${fmt(R,3)})² = ${fmt(R*R,3)} m²`,''),
+   ln(`βR<sub>d</sub>² = ${fmt(beta,3)} × ${fmt(R*R,3)} = ${fmt(beta*R*R,4)} m/s`,'Units: (m<sup>−1</sup>s<sup>−1</sup>)(m²) = m/s ✓'),
+   ln(`÷ 8 = ${fmt(cgm,4)} m/s`,'')
+  ]);
+  E(7,[
+   ln('c = ω/k = −βk/[k(k² + a)] = −β/(k² + a)','Divide ω by k; cancel k.'),
+   ln('−β/(k² + a) &lt; 0 for every k','Crests ALWAYS drift west.'),
+   ln(`At |k| = √3/R<sub>d</sub>: c = −β/(4a) = −βR<sub>d</sub>²/4 = ${fmt(cph,4)} m/s`,`Crests go west at ${fmt(-cph,3)} m/s while the packet goes east at ${fmt(cgm,3)} m/s.`)
+  ]);
+  break;
+ }
+ case 5:{ // Kelvin energy
+  T(['setup','cancel solve','diff','subst solve','subst cancel','subst cancel','cancel check']);
+  E(0,[
+   ln('u = 0 at the wall (x = 0)','No flow through the coast.'),
+   ln('Kelvin wave: u ≡ 0 everywhere','Its defining feature: trapped against the coast, flowing only alongshore.')
+  ]);
+  E(1,[
+   ln(`${x('∂u/∂t')} − fv = −g∂η/∂x`,'u ≡ 0 ⇒ ∂u/∂t = 0.'),
+   ln('−fv = −g∂η/∂x',''),
+   ln('fv = g∂η/∂x','Multiply both sides by −1: geostrophic balance.')
+  ]);
+  E(2,[
+   ln('η = [C·cos(ky+ωt)]·e<sup>−x/R<sub>d</sub></sup>','Separate the x-dependent part. The bracket has no x, so it acts as a constant.'),
+   ln('∂/∂x[e<sup>−x/R<sub>d</sub></sup>] = e<sup>−x/R<sub>d</sub></sup>·(−1/R<sub>d</sub>)','Chain rule: the inner derivative of −x/R<sub>d</sub> is −1/R<sub>d</sub>.'),
+   ln('∂η/∂x = −(1/R<sub>d</sub>)·C e<sup>−x/R<sub>d</sub></sup>cos(ky+ωt) = −η/R<sub>d</sub>','Recognise the original η.')
+  ],['Chain rule (exponential)','d(e<sup>u</sup>)/dx = e<sup>u</sup>·(du/dx)']);
+  E(3,[
+   ln(`f·v = g·(${gr('−η/R<sub>d</sub>')})`,'Substitute ∂η/∂x.'),
+   ln('v = −gη/(fR<sub>d</sub>)','Divide both sides by f.')
+  ]);
+  E(4,[
+   ln('v² = (−1)²·g²η²/(f²R<sub>d</sub>²) = g²η²/(f²R<sub>d</sub>²)','Square every factor; the minus sign disappears.'),
+   ln(`f²R<sub>d</sub>² = f²·${gr('(gh/f²)')} = ${x('f²')}·gh/${x('f²')} = gh`,'R<sub>d</sub>² = gh/f².'),
+   ln('v² = g²η²/(gh) = (g/h)·η²','Cancel one g.')
+  ]);
+  E(5,[
+   ln(`K = ½ρh(${gr('0')}² + v²) = ½ρh·v²`,'u = 0.'),
+   ln(`K = ½ρh·${gr('(g/h)η²')} = ½ρ${x('h')}·(g/${x('h')})η² = ½ρgη²`,'Substitute v² and cancel h.'),
+   ln('P = ½ρgη²','Exactly the same expression.')
+  ]);
+  E(6,[
+   ln('⟨cos²(ky+ωt)⟩ = ½','The time average multiplies both energies by the same factor.'),
+   ln('K̄ = P̄ = ¼ρgC²e<sup>−2x/R<sub>d</sub></sup>','Average of ½ρgη².'),
+   ln(`K̄/P̄ = ${x('¼ρgC²e<sup>−2x/R<sub>d</sub></sup>')} / ${x('¼ρgC²e<sup>−2x/R<sub>d</sub></sup>')} = 1`,'Everything cancels.')
+  ]);
+  break;
+ }
+ case 6:{ // lake seiche
+  const {Lx,Ly,h,g:G}=v,Lmax=Math.max(Lx,Ly),Lmin=Math.min(Lx,Ly),c=Math.sqrt(G*h),k=PI/Lmax,om=c*k,nu=om/(2*PI),T0=1/nu;
+  T(['neglect','setup','diff','diff solve','subst','wave','solve','diff subst cancel','solve check','num','num','num check']);
+  K({1:'*u η',4:'*u -η'});
+  E(0,[
+   ln('∂[(h+η)u]/∂x = h·∂u/∂x + ∂(ηu)/∂x','Expand the flux; h is constant.'),
+   ln('u·∂u/∂x and ηu are (small) × (small)','Second order ⇒ drop.')
+  ]);
+  E(1,[ln('2 equations · 2 unknown fields (u, η)','Keep u because the wall condition u = 0 is written in u.')]);
+  E(2,[
+   ln('∂/∂t(∂u/∂t) = ∂²u/∂t²',''),
+   ln('∂/∂t(−g·∂η/∂x) = −g·∂²η/(∂t∂x) = −g·∂²η/(∂x∂t)','g is constant; mixed partials commute.')
+  ],R_MIXED);
+  E(3,[
+   ln('∂/∂x(∂η/∂t) + ∂/∂x(h·∂u/∂x) = 0','Apply ∂/∂x to every term.'),
+   ln('∂²η/(∂x∂t) + h·∂²u/∂x² = 0','h is constant.'),
+   ln('∂²η/(∂x∂t) = −h·∂²u/∂x²','Subtract h∂²u/∂x² from both sides.')
+  ]);
+  E(4,[
+   ln(`∂²u/∂t² = −g·(${gr('−h∂²u/∂x²')})`,'Substitute.'),
+   ln('∂²u/∂t² = gh·∂²u/∂x²','(−g)(−h) = +gh.')
+  ]);
+  E(5,[
+   ln('Travelling: u(0,t) = A cos(0 − ωt) = A cos(ωt) ≠ 0','Fails the wall condition for most t ✗'),
+   ln('Standing: u(0,t) = A sin(0)·cos(ωt) = 0 for all t','Passes ✓ — the node at x = 0 is built in.')
+  ]);
+  E(6,[
+   ln('u(L,t) = A·sin(kL)·cos(ωt) = 0 for all t','A ≠ 0 and cos(ωt) is not always 0, so sin(kL) = 0.'),
+   ln('sin(kL) = 0 &nbsp;⇒&nbsp; kL = nπ, &nbsp; n = 0, 1, 2, …','Zeros of sine.'),
+   ln('k = nπ/L; &nbsp; wavelength λ = 2π/k = 2L/n','n = 1: half a wavelength spans the basin.')
+  ]);
+  E(7,[
+   ln('∂²u/∂t² = A sin(kx)·(−ω² cos ωt) = −ω²u','Differentiate cos(ωt) twice.'),
+   ln('∂²u/∂x² = A(−k² sin kx)·cos ωt = −k²u','Differentiate sin(kx) twice.'),
+   ln(`${gr('−ω²u')} = gh·(${gr('−k²u')})`,'Substitute into the wave equation.'),
+   ln(`ω²·${x('u')} = ghk²·${x('u')} &nbsp;⇒&nbsp; ω² = ghk²`,'Multiply by −1, divide by u.')
+  ],R_SIN);
+  E(8,[
+   ln('2-D basin: ω<sub>nm</sub>² = gh·π²(n²/L<sub>x</sub>² + m²/L<sub>y</sub>²)','k<sub>x</sub> = nπ/L<sub>x</sub> and k<sub>y</sub> = mπ/L<sub>y</sub> combine as k² = k<sub>x</sub>² + k<sub>y</sub>².'),
+   ln('(1,0): ω = π√(gh)/L<sub>x</sub>; &nbsp; (0,1): ω = π√(gh)/L<sub>y</sub>','The two candidates for the lowest mode.'),
+   ln(`${Lmax/1000} km &gt; ${Lmin/1000} km &nbsp;⇒&nbsp; use L = ${Lmax/1000} km`,'Larger L in the denominator ⇒ smaller ω.')
+  ]);
+  E(9,[
+   ln(`gh = ${G} × ${h} = ${fmt(G*h,5)} m²/s²`,''),
+   ln(`c = √(${fmt(G*h,5)}) = ${fmt(c,5)} m/s`,'')
+  ]);
+  E(10,[
+   ln(`k = π / ${Lmax} = ${fmt(k,5)} m<sup>−1</sup>`,'n = 1 standing mode.'),
+   ln(`ω = c·k = ${fmt(c,5)} × ${fmt(k,5)} = ${fmt(om,5)} s<sup>−1</sup>`,'')
+  ]);
+  E(11,[
+   ln(`ν = ${fmt(om,5)} / (2π) = ${fmt(om,5)} / ${fmt(2*PI,5)} = ${fmt(nu,5)} Hz`,'rad/s ÷ 2π = cycles/s.'),
+   ln(`T = 1/ν = ${fmt(T0,5)} s = ${fixed(T0/60,2)} min`,''),
+   ln(`Check: T = 2L/c = ${2*Lmax} / ${fmt(c,5)} = ${fmt(2*Lmax/c,5)} s ✓`,'The wave crosses the long axis and back once per period.')
+  ]);
+  break;
+ }
+ case 7:{ // equatorial Rossby
+  const {c,beta,D}=v,Req=Math.sqrt(c/beta),mon=(365.25/12)*86400,kR=2*PI*Req/1e7,tt=n=>D*(2*n+1)/c;
+  T(['neglect','neglect solve','diff','subst cancel','setup num','num','solve num','num check']);
+  E(0,[
+   ln('k²R<sub>eq</sub>² = (2πR<sub>eq</sub>/L)²','k = 2π/L, so kR<sub>eq</sub> compares the deformation radius with the wavelength.'),
+   ln(`Example: L = 10 000 km, R<sub>eq</sub> ≈ ${fmt(Req/1000,3)} km ⇒ k²R<sub>eq</sub>² ≈ ${fmt(kR*kR,2)}`,'Compare with 2n+1 = 3, 5, 7: tiny.'),
+   ln(`k² ≪ (2n+1)/R<sub>eq</sub>² &nbsp;⇒&nbsp; drop ${x('k²')}`,'This is an approximation (neglect), not an exact cancellation.')
+  ]);
+  E(1,[
+   ln('ω ≈ −βk / [(2n+1)/R<sub>eq</sub>²]','Denominator after neglecting k².'),
+   ln('ω ≈ −βk · R<sub>eq</sub>²/(2n+1)','Dividing by a fraction = multiplying by its reciprocal.'),
+   ln('ω ≈ −[βR<sub>eq</sub>²/(2n+1)]·k','Group the constants: ω is now a straight line in k.')
+  ],['Dividing by a fraction','A ÷ (B/C) = A·C/B']);
+  E(2,[
+   ln('d(C·k)/dk = C &nbsp;for any constant C','The slope of a straight line.'),
+   ln('c<sub>g,n</sub> = −βR<sub>eq</sub>²/(2n+1)',''),
+   ln('ω/k = −βR<sub>eq</sub>²/(2n+1) = c<sub>g,n</sub>','Phase speed = group speed: long Rossby waves are non-dispersive.')
+  ]);
+  E(3,[
+   ln('R<sub>eq</sub> = √(c/β) &nbsp;⇒&nbsp; R<sub>eq</sub>² = c/β','Square both sides.'),
+   ln(`βR<sub>eq</sub>² = ${x('β')}·c/${x('β')} = c`,'Cancel β.'),
+   ln(`c<sub>g,n</sub> = −${gr('c')}/(2n+1)`,'')
+  ]);
+  E(4,[ln(`R<sub>eq</sub> = √(${c} / ${fmt(beta,3)}) = ${fmt(Req/1000,4)} km`,'Consistency check of the assumed c and β.')]);
+  E(5,[
+   ln(`n = 1: 2n+1 = 3 &nbsp;⇒&nbsp; ${c}/3 = ${fmt(c/3,4)} m/s`,''),
+   ln(`n = 2: 2n+1 = 5 &nbsp;⇒&nbsp; ${c}/5 = ${fmt(c/5,4)} m/s`,''),
+   ln(`n = 3: 2n+1 = 7 &nbsp;⇒&nbsp; ${c}/7 = ${fmt(c/7,4)} m/s`,'All westward (negative signed velocity).')
+  ]);
+  E(6,[
+   ln('t<sub>n</sub> = D ÷ [c/(2n+1)] = D·(2n+1)/c','Dividing by a fraction again.'),
+   ln(`t₁ = ${fmt(D,4)} × 3 / ${c} = ${fmt(tt(1),4)} s`,''),
+   ln(`t₂ = ${fmt(D,4)} × 5 / ${c} = ${fmt(tt(2),4)} s`,''),
+   ln(`t₃ = ${fmt(D,4)} × 7 / ${c} = ${fmt(tt(3),4)} s`,'')
+  ],['Dividing by a fraction','A ÷ (B/C) = A·C/B']);
+  E(7,[
+   ln(`1 month = (365.25/12) × 86 400 s = ${fmt(mon,5)} s`,''),
+   ln(`t₁ = ${fmt(tt(1),4)} / ${fmt(mon,5)} = ${fixed(tt(1)/mon,1)} months`,''),
+   ln(`t₂ = ${fmt(tt(2),4)} / ${fmt(mon,5)} = ${fixed(tt(2)/mon,1)} months`,''),
+   ln(`t₃ = ${fmt(tt(3),4)} / ${fmt(mon,5)} = ${fixed(tt(3)/mon,1)} months`,'t₃ &gt; t₂ &gt; t₁ ✓ — higher modes are slower.')
+  ]);
+  break;
+ }
+ case 8:{ // known Q5
+  T(['setup','setup','neglect','setup','diff','mult','add cancel','diff mult','subst cancel','solve','wave','diff','subst cancel','solve','check']);
+  K({3:'*u v η',6:'*u -v η',8:'*u -v -η',9:'*u -v -η'});
+  E(1,[
+   ln('du/dt = ∂u/∂t + u∂u/∂x + v∂u/∂y','Material derivative = local change + advection.'),
+   ln('h = h₀ + η','Total depth = mean depth + surface displacement.')
+  ]);
+  E(2,[
+   ln('∂[(h₀+η)u]/∂x = h₀·∂u/∂x + ∂(ηu)/∂x','Expand the flux; h₀ is constant.'),
+   ln('u∂u/∂x, v∂u/∂y, u∂v/∂x, v∂v/∂y, ηu = (small) × (small)','Second order ⇒ drop.'),
+   ln('∂/∂y(anything) = 0','x-only propagation ⇒ drop all y-derivatives.')
+  ]);
+  E(3,[ln('3 equations · 3 unknown fields (u, v, η)','Keep u; v leaves through f, η through continuity.')]);
+  E(4,[
+   ln('∂/∂t(∂u/∂t) = ∂²u/∂t²',''),
+   ln('∂/∂t(−f·v) = −f·∂v/∂t','f is constant (f-plane).'),
+   ln('∂/∂t(−g·∂η/∂x) = −g·∂²η/(∂x∂t)','Mixed partials commute.')
+  ]);
+  E(5,[ln('f·∂v/∂t + f·fu = f·0 &nbsp;⇒&nbsp; f∂v/∂t + f²u = 0','Multiply every term by f.')]);
+  E(6,[
+   ln(`[∂²u/∂t² ${x('− f∂v/∂t')}] + [${x('+ f∂v/∂t')} + f²u] = −g∂²η/(∂x∂t) + 0`,'Add the two rows term by term.'),
+   ln('∂²u/∂t² + f²u = −g∂²η/(∂x∂t)','Sign check: −f·(∂v/∂t) with ∂v/∂t = −fu gives −f(−fu) = +f²u.')
+  ]);
+  E(7,[
+   ln('−g·∂/∂x(∂η/∂t) = −g·∂²η/(∂x∂t)',''),
+   ln('−g·∂/∂x(h₀∂u/∂x) = −gh₀·∂²u/∂x²','h₀ is constant.'),
+   ln('−g∂²η/(∂x∂t) − gh₀∂²u/∂x² = 0 &nbsp;⇒&nbsp; −g∂²η/(∂x∂t) = gh₀∂²u/∂x²','Add gh₀∂²u/∂x² to both sides.')
+  ]);
+  E(8,[
+   ln(`∂²u/∂t² + f²u = ${x('−g∂²η/(∂x∂t)')}`,'The η term to remove.'),
+   ln(`∂²u/∂t² + f²u = ${gr('gh₀∂²u/∂x²')}`,'Replace it with its equal.')
+  ],R_MIXED);
+  E(9,[ln('∂²u/∂t² + f²u − gh₀∂²u/∂x² = 0','Subtract gh₀∂²u/∂x² from both sides.')]);
+  E(10,[ln('Φ = kx − ωt; &nbsp; ∂Φ/∂x = k; &nbsp; ∂Φ/∂t = −ω','The inner derivatives the chain rule will bring down.')]);
+  E(11,[
+   ln('∂u/∂t = A(−sinΦ)·(−ω) = ωA sinΦ',''),
+   ln('∂²u/∂t² = ωA cosΦ·(−ω) = −ω²u',''),
+   ln('∂u/∂x = A(−sinΦ)·(k) = −kA sinΦ',''),
+   ln('∂²u/∂x² = −kA cosΦ·(k) = −k²u','')
+  ],R_SIN);
+  E(12,[
+   ln(`${gr('−ω²u')} + f²u − gh₀·(${gr('−k²u')}) = 0`,'Replace each derivative.'),
+   ln('−ω²u + f²u + gh₀k²u = 0','−gh₀·(−k²u) = +gh₀k²u.'),
+   ln(`[−ω² + f² + gh₀k²]·${x('u')} = 0`,'u is not zero for a real wave ⇒ divide it away.')
+  ]);
+  E(13,[
+   ln('−ω² + f² + gh₀k² = 0',''),
+   ln('ω² = f² + gh₀k²','Add ω² to both sides.')
+  ]);
+  E(14,[
+   ln('f = 0: ω² = gh₀k² &nbsp;⇒&nbsp; ω/k = √(gh₀)','Non-rotating shallow-water gravity wave ✓'),
+   ln('k = 0: ω² = f² &nbsp;⇒&nbsp; ω = |f|','Inertial oscillation (period 2π/f ≈ 17.5 h for f = 10<sup>−4</sup> s<sup>−1</sup>) ✓'),
+   ln('ω ≥ |f| always','Poincaré waves are super-inertial.')
+  ]);
+  break;
+ }
+ }
+ return p;
+}
+
+const builders=[structured1,structured2,structured3,structured4,structured5,structured6,structured7,structured8,structured9].map((build,id)=>v=>enrich(attachVisualMoves(build(v),id,v),id,v));
 const META=[['The Slowest Ripple','Minimize phase speed'],['The 600-m Swell','Phase and group speed'],['30° Internal Wave','Angle to period'],['Poincaré Currents','Two velocity amplitudes'],['Rossby Group Speed','Maximum eastward'],['Kelvin Energy','Energy ratio'],['Lake Seiche','Lowest resonance'],['Equatorial Rossby','Pacific crossing: modes 1–3'],['KNOWN TEST Q5','Poincaré derivation']];
 const DAY_INFO=[['Day 1 — Learn the equation strategy.','Original values. For each problem memorize the starting equations, unknowns, elimination path, then calculate. Write all 8 sample problems, then the known question-5 derivation.'],['Day 2 — Recall the sequence.','New values. Write the governing equations and elimination path; then supply each algebraic move before revealing that step. Repeat any you miss.'],['Day 3 — Solve like the test.','Fresh values. From a blank page, write equations → linear form → unknowns → eliminate → substitute numbers. Then reveal the solution and mark it only if you solved without help.']];
 const storageKey='oc4211-slide-method-v7'; // preserve existing seven-problem progress
@@ -833,12 +1477,12 @@ function render(){document.body.classList.toggle('mode-recall',state.mode==='rec
 const map=p.map;
 const fullMap=`<section class="panel equation-map" aria-label="Start here, governing equations and unknown elimination"><div class="panel-body"><div class="map-kicker">Follow the lecture-slide method</div><div class="slide-source">${map.source}</div><h3 class="map-heading">Governing → linearize → one unknown → ideal wave → solve</h3><div class="map-block"><div class="map-label">A. Starting equations</div>${map.start.map(([name,formula])=>`<div class="map-eqrow"><span class="map-eqlabel">${name}</span><div class="map-equation">${phoneEquation(formula)}</div></div>`).join('')}</div><div class="map-block"><div class="map-label">B. Correct linearized form</div><div class="map-detail">${map.linear}</div></div><div class="map-block"><div class="map-label">C. Count the unknowns</div><div class="map-detail">${map.unknown}</div></div><div class="map-block"><div class="map-label">D. Elimination strategy</div><div class="map-detail">${map.eliminate}</div></div><div class="map-target"><span>Final unknown / target</span><strong>${map.target}</strong></div></div></section>`;
 const mapHtml=(mode==='learn'||state.showMap)?fullMap:`<section class="panel map-prompt"><div class="panel-body"><div class="map-kicker">Start with a blank equation map</div><h3 class="map-heading">Before solving: what are the equations and unknowns?</h3><p class="map-detail">On paper, list the governing equations, simplify to the right linearized form, count the unknowns, and name the ones to eliminate. Identify exactly what you must find.</p><button type="button" class="btn secondary" id="map-reveal">Reveal equation map</button></div></section>`;
-const algebraLegend=`<div class="move-legend"><strong>Watch the move:</strong><span><span class="math-cancel">eliminated term</span> red diagonal</span><span><span class="math-sub">substituted term</span> green</span></div>`;
-const stepsHtml=mode==='exam'&&!state.examReveal?`<div class="empty-exam"><h4>Start with a blank page.</h4><p>Write the full solution from the given information: equations, substitutions, reasons, final value and units. Then compare against the numbered steps.</p><textarea id="scratch" class="scratch" aria-label="Exam practice scratchpad" placeholder="START equations:&#10;LINEARIZED:&#10;UNKNOWNS:&#10;ELIMINATE:&#10;TARGET:&#10;ALGEBRA:&#10;NUMBERS:" spellcheck="false"></textarea></div>`:p.steps.map((s,i)=>({s,i})).filter(({i})=>mode!=='recall'||i<=state.reveal).map(({s,i})=>`<article class="step ${isVisible(i)?'':'locked'}"><span class="step-number">${i+1}</span><div><h4>${s.cue}</h4>${isVisible(i)?`${s.work?`<div class="move-panel"><div class="move-caption">Equation(s) used at this step</div><div class="move-source-lines">${s.work.source.map(z=>`<div class="move-source-line">${phoneEquation(z)}</div>`).join('')}</div><div class="move-caption">Operation / substitution</div><div class="move-action">${s.work.operation}</div></div><div class="move-result-label">Result of this operation</div>`:''}<div class="eq formula-line">${phoneEquation(s.eq)}</div><p class="why"><strong>Why:</strong> ${s.why}</p>`:'<p class="hidden-note">Say the equation and its reason before revealing.</p>'}</div></article>`).join('');
+const algebraLegend=`<div class="move-legend"><strong>How to read a step:</strong><span><span class="math-cancel">eliminated</span> red slash</span><span><span class="math-sub">substituted</span> green</span><span><span class="op-tag op-diff"><i>∂</i>move</span> type of move</span><span><span class="uk keep">u</span> <span class="uk gone">v</span> unknowns left</span></div>`;
+const stepsHtml=mode==='exam'&&!state.examReveal?`<div class="empty-exam"><h4>Start with a blank page.</h4><p>Write the full solution from the given information: equations, substitutions, reasons, final value and units. Then compare against the numbered steps.</p><textarea id="scratch" class="scratch" aria-label="Exam practice scratchpad" placeholder="START equations:&#10;LINEARIZED:&#10;UNKNOWNS:&#10;ELIMINATE:&#10;TARGET:&#10;ALGEBRA:&#10;NUMBERS:" spellcheck="false"></textarea></div>`:p.steps.map((s,i)=>({s,i})).filter(({i})=>mode!=='recall'||i<=state.reveal).map(({s,i})=>`<article class="step ${isVisible(i)?'':'locked'}"><span class="step-number">${i+1}</span><div><h4>${s.cue}</h4>${opTagsHtml(s)}${isVisible(i)?`${workHtml(s)}<div class="eq formula-line">${phoneEquation(s.eq)}</div>${trackHtml(s)}<p class="why"><strong>Why:</strong> ${s.why}</p>`:'<p class="hidden-note">Say the equation and its reason before revealing. The tag above tells you what kind of move it is.</p>'}</div></article>`).join('');
 const doBtn= saved.done[state.day].includes(state.p)?`<button class="btn good" id="done-btn">✓ Solved without help — undo</button>`:`<button class="btn good" id="done-btn">✓ Mark solved without help</button>`;
 const ctrlBtns=mode==='recall'?`<button class="btn primary" id="reveal-btn" ${shown>=p.steps.length?'disabled':''}>Reveal next (${shown}/${p.steps.length})</button><button class="btn secondary" id="full-btn">Show all steps</button><button class="btn secondary" id="reset-btn">Start again</button>`:mode==='exam'?`<button class="btn primary" id="reveal-btn">${state.examReveal?'Hide solution':'Check against solution'}</button>`:`<button class="btn secondary" id="practice-btn">Switch to recall practice</button>`;
 let caseOptions=(state.p===8?['Original derivation','Recall repetition','Timed exam repetition']:['Original example','Practice variation A','Practice variation B']).map((x,i)=>`<option value="${i}" ${state.caseIdx===i?'selected':''}>${x}</option>`).join('');
-el('problem-page').innerHTML=`<section class="problem-header"><div class="kicker">${state.p===8?'Known Test Q5':`Sample problem ${state.p+1} of 8`} · ${p.lec}</div><h2>${p.title}</h2><p>${p.desc}</p></section><section class="panel"><div class="panel-body"><p class="section-caption">The actual task</p><p class="question">${p.question}</p><div class="given-row">${p.givens.map(x=>`<span class="given">${x}</span>`).join('')}</div><div class="route"><b>Remember the route</b>${p.route.map((x,i)=>`${i?'<i>→</i>':''}<span>${x}</span>`).join('')}</div><div class="symbol-area">${p.symbols.map(x=>`<span><b>•</b> ${x}</span>`).join('')}</div></div></section>${mapHtml}<div class="controls"><div class="mode-buttons" role="group" aria-label="Solution mode"><button class="mode ${mode==='learn'?'active':''}" data-mode="learn"><span class="mode-long">Study · all steps</span><span class="mode-short">Study</span></button><button class="mode ${mode==='recall'?'active':''}" data-mode="recall"><span class="mode-long">Recall · one step</span><span class="mode-short">Recall</span></button><button class="mode ${mode==='exam'?'active':''}" data-mode="exam"><span class="mode-long">Exam · blank</span><span class="mode-short">Exam</span></button></div><label class="select-wrap">${state.p===8?'Practice repetition':'Numbers for this attempt'} <select id="case-select">${caseOptions}</select></label></div><section class="panel"><div class="workhead"><div><h3>${p.steps.length} moves · Equations to answer</h3><p>Eliminate the unwanted unknowns first. Substitute numbers only after the algebra is complete.</p></div><span class="mini muted">${shown}/${p.steps.length} visible</span></div>${mode==='exam'&&!state.examReveal?'':algebraLegend}<div class="steps" id="steps">${stepsHtml}</div><div class="actionbar">${ctrlBtns}<span class="action-note">Repeat until no hints are needed.</span></div>${mode==='learn'||mode==='recall'&&shown===p.steps.length||mode==='exam'&&state.examReveal?`<div class="answer"><h4>Box the result</h4><div class="answer-line">${p.answer}</div>${p.alt?`<p><b>Alternative convention:</b> ${p.alt}</p>`:''}</div>`:''}</section><section class="panel"><div class="panel-body"><p class="section-caption">One mistake to avoid</p><p class="question" style="font-size:13.5px;margin-bottom:0">${p.trap}</p></div><div class="complete"><div><b>Finished this repetition?</b><p>Mark complete only if you could reproduce the solution unaided.</p></div>${doBtn}</div></section>`;
+el('problem-page').innerHTML=`<section class="problem-header"><div class="kicker">${state.p===8?'Known Test Q5':`Sample problem ${state.p+1} of 8`} · ${p.lec}</div><h2>${p.title}</h2><p>${p.desc}</p></section><section class="panel"><div class="panel-body"><p class="section-caption">The actual task</p><p class="question">${p.question}</p><div class="given-row">${p.givens.map(x=>`<span class="given">${x}</span>`).join('')}</div><div class="route"><b>Remember the route</b>${p.route.map((x,i)=>`${i?'<i>→</i>':''}<span>${x}</span>`).join('')}</div><div class="symbol-area">${p.symbols.map(x=>`<span><b>•</b> ${x}</span>`).join('')}</div></div></section>${mapHtml}<div class="controls"><div class="mode-buttons" role="group" aria-label="Solution mode"><button class="mode ${mode==='learn'?'active':''}" data-mode="learn"><span class="mode-long">Study · all steps</span><span class="mode-short">Study</span></button><button class="mode ${mode==='recall'?'active':''}" data-mode="recall"><span class="mode-long">Recall · one step</span><span class="mode-short">Recall</span></button><button class="mode ${mode==='exam'?'active':''}" data-mode="exam"><span class="mode-long">Exam · blank</span><span class="mode-short">Exam</span></button></div><label class="select-wrap">${state.p===8?'Practice repetition':'Numbers for this attempt'} <select id="case-select">${caseOptions}</select></label></div><section class="panel"><div class="workhead"><div><h3>${p.steps.length} moves · Equations to answer</h3><p>Eliminate the unwanted unknowns first. Substitute numbers only after the algebra is complete. Every hidden algebra move is written out under “Line by line”.</p></div><span class="mini muted">${shown}/${p.steps.length} visible</span></div>${mode==='exam'&&!state.examReveal?'':algebraLegend}<div class="steps" id="steps">${stepsHtml}</div><div class="actionbar">${ctrlBtns}<span class="action-note">Repeat until no hints are needed.</span></div>${mode==='learn'||mode==='recall'&&shown===p.steps.length||mode==='exam'&&state.examReveal?`<div class="answer"><h4>Box the result</h4><div class="answer-line">${p.answer}</div>${p.alt?`<p><b>Alternative convention:</b> ${p.alt}</p>`:''}</div>`:''}</section><section class="panel"><div class="panel-body"><p class="section-caption">One mistake to avoid</p><p class="question" style="font-size:13.5px;margin-bottom:0">${p.trap}</p></div><div class="complete"><div><b>Finished this repetition?</b><p>Mark complete only if you could reproduce the solution unaided.</p></div>${doBtn}</div></section>`;
  if(el('map-reveal'))el('map-reveal').addEventListener('click',()=>{state.showMap=true;render()});
  el('problem-page').querySelectorAll('.mode').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
  el('case-select').addEventListener('change',e=>{state.caseIdx=Number(e.target.value);resetReveal();render()});
@@ -906,6 +1550,10 @@ if(typeof ResizeObserver!=='undefined'){
 
 selectDay(state.day);
 refreshMobileOffsets();
+// Offline support + Home Screen install (network-first, so updates still arrive when online).
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
+ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
 </script>
 </body>
 </html>
